@@ -1,3 +1,5 @@
+package scanner;
+
 import java.io.*;
 import java.util.ArrayList;
 
@@ -181,7 +183,12 @@ public class Scanner
                o == '/' || 
                o == '%' || 
                o == '(' || 
-               o == ')';
+               o == ')' ||
+               o == ';' ||
+               o == ':' ||
+               o == '<' ||
+               o == '>' ||
+               o == '.';
     }
 
     /**
@@ -224,6 +231,10 @@ public class Scanner
                     res += currentChar;
                     getNextChar();
                 } 
+                else if (isOperand(currentChar))
+                {
+                    return res;
+                }
                 else
                 {
                     throw new ScanErrorException(
@@ -266,6 +277,10 @@ public class Scanner
                     res += currentChar;
                     getNextChar();
                 } 
+                else if (isOperand(currentChar))
+                {
+                    return res;
+                }
                 else
                 {
                     throw new ScanErrorException(
@@ -393,7 +408,7 @@ public class Scanner
      */
     public static void main(String[] args)
     {
-        String filename = "./ScannerTest.txt";
+        String filename = "./AdvancedScannerTest.txt";
         try
         {
             FileInputStream inStream = new FileInputStream(new File(filename));

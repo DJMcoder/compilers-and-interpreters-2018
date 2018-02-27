@@ -28,7 +28,7 @@ return "END";
 /**
  * Pattern definitions
  */
-Operator = '=' | '+' | '-' | '*' | '\/' | '%' | '(' | ')'
+Operator = "=" | "+" | "-" | "*" | "\/" | "%" | "(" | ")" | ";"
 LineTerminator = \r|\n|\r\n
 WhiteSpace = {LineTerminator} | [ \t\f]
 
@@ -39,7 +39,8 @@ WhiteSpace = {LineTerminator} | [ \t\f]
 /**
  * lexical rules
  */
- {Operator}			{return "OP:" + yytext(); }
- [a-z A-Z][0-9 a-z A-Z]*	{return "ID: " + yytext();}
+ {Operator}			{return "OP: " + yytext(); }
+ [a-z|A-Z][0-9|a-z|A-Z]*	{return "ID: " + yytext();}
  [0-9]+			{return "NUM:" + yytext();}
  {WhiteSpace}		{}
+ . {}
