@@ -149,7 +149,7 @@ public class Parser
        {
            eat("WRITELN");
            eat("(");
-           System.out.println(parseExpr());
+           System.out.println(parseStrings());
            eat(")");
            eat(";");
            return;
@@ -181,32 +181,29 @@ public class Parser
        eat(";");
    }
    
-   public String parseString()
+   public String parseStrings()
    {
-       String firstString;
-       if (currentToken.charAt(0) == '\'')
-       {
-           firstString = currentToken;
-       }
-       else if (Scanner.isDigit(currentToken.charAt(0)))
-       {
-           firstString = currentToken.toString();
-       }
-       else
-       {
-           firstString = vars.get(currentToken).toString();
-       }
-       eat(currentToken);
-       
-       if (currentToken.equals(","))
+       String current = parseString();
+       while (currentToken.charAt(0) == ',')
        {
            eat(",");
-           return firstString + parseString();
+           current += parseString();
        }
-       return firstString;
+       return current;
    }
    
-   private boolean parseBool()
+   public String parseString()
+   {
+       if (currentToken.charAt(0) == '\'')
+       {
+           String res = currentToken.substring(1, currentToken.length() - 1);
+           eat(currentToken);
+           return res;
+       }
+       return parseExpr().toString();
+   }
+   
+   /*private boolean parseBool()
    {
        if (currentToken.equals("TRUE"))
        {
@@ -267,38 +264,40 @@ public class Parser
            }
        }
    }
+   */
    
-   private int parseFactor()
+   private Object parseFactor()
    {
        // - factor
        if (currentToken.equals("-"))
        {
            eat("-");
-           return -1 * parseFactor();
+           return Integer.valueOf(-1 * ((Integer)parseFactor()).intValue());
        }
        // ( expr )
        else if (currentToken.equals("("))
        {
            eat("(");
-           int res = parseExpr();
+           Object res = parseExpr();
            eat(")");
            return res;
        }
-       /*else if (currentToken.equals("NOT"))
+       /*else if (currentToken.equals(","))
        {
-           return !parseBigBool();
+           eat(",");
+           return null;
        }*/
        // identifier
        else if (Scanner.isLetter(currentToken.charAt(0)))
        {
-           int res = (Integer)vars.get(currentToken);
+           Object res = (Integer)vars.get(currentToken);
            eat(currentToken);
            return res;
        }
        // number
        else
        {
-           return parseNumber();
+           return Integer.valueOf(parseNumber());
        }
    }
    
@@ -307,28 +306,38 @@ public class Parser
        
    }*/
    
-   private int parseExpr()
+   private Object parseExpr()
    {
-       int current = parseTerm();
+       Object cur = parseTerm();
+       if (cur instanceof String)
+       {
+           return cur;
+       }
+       int current = ((Integer)cur).intValue();
        while (currentToken.equals("+") || currentToken.equals("-"))
        {
            if (currentToken.equals("+"))
            {
                eat("+");
-               current += parseTerm();
+               current += ((Integer)parseTerm()).intValue();
            }
            else
            {
                eat("-");
-               current -= parseTerm();
+               current -= ((Integer)parseTerm()).intValue();
            }
        }
        return current;
    }
    
-   private int parseTerm()
+   private Object parseTerm()
    {
-       int current = parseFactor();
+       Object cur = parseFactor();
+       if (cur instanceof String)
+       {
+           return cur;
+       }
+       int current = ((Integer)cur).intValue();
        while (currentToken.equals("*") || 
                currentToken.equals("/") ||
                currentToken.equals("mod"))
@@ -336,21 +345,21 @@ public class Parser
            if (currentToken.equals("*"))
            {
                eat("*");
-               current *= parseFactor();
+               current *= ((Integer)parseFactor()).intValue();
            }
            else if (currentToken.equals("/"))
            {
                eat("/");
-               current /= parseFactor();
+               current /= ((Integer)parseFactor()).intValue();
            }
            else 
            {
                eat("mod");
-               current %= parseFactor();
+               current %= ((Integer)parseFactor()).intValue();
            }
            
        }
-       return current;
+       return Integer.valueOf(current);
    }
    
    public static void main(String[] args)

@@ -188,6 +188,7 @@ public class Scanner
                o == ':' ||
                o == '<' ||
                o == '>' ||
+               o == ',' ||
                o == '.';
     }
 
@@ -324,7 +325,12 @@ public class Scanner
                     res += currentChar;
                     getNextChar();
                 }
-                else if(isWhiteSpace(currentChar))
+                else if (res.equals("<") && currentChar == '>')
+                {
+                    res += currentChar;
+                    getNextChar();
+                }
+                else if(!isOperand(currentChar))
                 {
                     return res;
                 }

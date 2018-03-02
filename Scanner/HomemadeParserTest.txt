@@ -1,4 +1,6 @@
 BEGIN
+	WRITELN('Enter a number: ');
 	READLN(x);
-	WRITELN(x mod 4);
+	WRITELN('Your number was: ', x);
+	WRITELN('Your processed number is: ', x * 4);
 END;
