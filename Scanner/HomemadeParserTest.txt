@@ -1,0 +1,4 @@
+BEGIN
+	READLN(x);
+	WRITELN(x mod 4);
+END;

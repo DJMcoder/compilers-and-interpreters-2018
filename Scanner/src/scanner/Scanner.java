@@ -313,7 +313,30 @@ public class Scanner
         if (hasNext() && isOperand(currentChar))
         {
             res += currentChar;
-            getNextChar();
+            if (currentChar == '<' || 
+                currentChar == '>' || 
+                currentChar == '=' ||
+                currentChar == ':')
+            {
+                getNextChar();
+                if (currentChar == '=')
+                {
+                    res += currentChar;
+                    getNextChar();
+                }
+                else if(isWhiteSpace(currentChar))
+                {
+                    return res;
+                }
+                else
+                {
+                    throw new ScanErrorException("Unexpected token '" + 
+                            res + "', expected a valid operand");
+                }
+            }
+            else {
+                getNextChar();
+            }
         } 
         else
         {
@@ -321,6 +344,29 @@ public class Scanner
                     currentChar + "', expected an operand");
         }
         return res;
+    }
+    
+    private String scanString() throws ScanErrorException
+    {
+        String res = "\'";
+        
+        if (hasNext() && currentChar == '\'')
+        {
+            eat('\'');
+            while (currentChar != '\'')
+            {
+                if (!hasNext())
+                {
+                    throw new ScanErrorException("String never closed");
+                }
+                res += currentChar;
+                getNextChar();
+            }
+            eat('\'');
+            return res + "\'";
+        }
+        throw new ScanErrorException("Unexpected character '" + 
+                currentChar + "', expected \"\'\"");
     }
 
     /**
@@ -335,6 +381,10 @@ public class Scanner
         while (hasNext() && isWhiteSpace(currentChar))
         {
             getNextChar();
+        }
+        if (currentChar == '\'')
+        {
+            return scanString();
         }
         if (isLetter(currentChar))
         {
@@ -358,7 +408,7 @@ public class Scanner
             }
             return nextToken();
         } 
-        else if (op.charAt(0) == '/' && currentChar == '*')
+        else if (op.charAt(0) == '(' && currentChar == '*')
         {
             getNextCharOrError("Multiline comment never closed.");
             char lastChar;
@@ -369,7 +419,7 @@ public class Scanner
                 lastChar = currentChar;
                 getNextCharOrError("Multiline comment never closed.");
                 //System.out.println("("+lastChar+currentChar+");" + commentLevel);
-                if (lastChar == '*' && currentChar == '/')
+                if (lastChar == '*' && currentChar == ')')
                 {
                     commentLevel--;
                     if (commentLevel > 0)
@@ -382,7 +432,7 @@ public class Scanner
                         return nextToken();
                     }
                 } 
-                else if (lastChar == '/' && currentChar == '*')
+                else if (lastChar == '(' && currentChar == '*')
                 {
                     commentLevel++;
                     getNextCharOrError("Multiline comment never closed.");
@@ -408,11 +458,11 @@ public class Scanner
      */
     public static void main(String[] args)
     {
-        String filename = "./AdvancedScannerTest.txt";
+        String filename = "./ScannerTest.txt";
         try
         {
             FileInputStream inStream = new FileInputStream(new File(filename));
-            System.out.println("File '" + filename + "' successfully scanned.");
+            //System.out.println("File '" + filename + "' successfully scanned.");
             Scanner lex = new Scanner(inStream);
 
             ArrayList<String> tokens = new ArrayList<String>();
@@ -425,7 +475,7 @@ public class Scanner
                     {
                         return;
                     }
-                    System.out.println(token);
+                    //System.out.println(token);
                     tokens.add(token);
                 } 
                 catch (ScanErrorException e)
