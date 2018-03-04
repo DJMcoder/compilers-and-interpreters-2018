@@ -149,7 +149,8 @@ public class Parser
        {
            eat("WRITELN");
            eat("(");
-           System.out.println(parseStrings());
+           //System.out.println(parseStrings());
+           System.out.println(parseExpr());
            eat(")");
            eat(";");
            return;
@@ -163,13 +164,13 @@ public class Parser
            eat(currentToken);
            eat(")");
            eat(";");
-           vars.put(var, read.nextInt());
+           vars.put(var, read.nextLine());
            return;
        }
        // ensure identifier
        if (!Scanner.isLetter(currentToken.charAt((0))))
        {
-           System.out.println("Error: invalid identifier " + currentToken);
+           System.err.println("Error: invalid identifier " + currentToken);
            System.exit(1);
            return;
        }
@@ -279,6 +280,7 @@ public class Parser
        {
            eat("(");
            Object res = parseExpr();
+           //System.out.println(res);
            eat(")");
            return res;
        }
@@ -290,14 +292,26 @@ public class Parser
        // identifier
        else if (Scanner.isLetter(currentToken.charAt(0)))
        {
-           Object res = (Integer)vars.get(currentToken);
+           Object res = vars.get(currentToken);
+           if (res == null)
+           {
+               throw new IllegalArgumentException("Variable '" + currentToken
+                       + "' does not exist");
+           }
            eat(currentToken);
            return res;
        }
        // number
        else
        {
-           return Integer.valueOf(parseNumber());
+           try
+           {
+               return Integer.valueOf(parseNumber());
+           }
+           catch(NumberFormatException e)
+           {
+               return parseStrings();
+           }
        }
    }
    
@@ -311,7 +325,14 @@ public class Parser
        Object cur = parseTerm();
        if (cur instanceof String)
        {
-           return cur;
+           try
+           {
+               cur = Integer.parseInt((String)cur);
+           }
+           catch(NumberFormatException e)
+           {
+               return cur;
+           }
        }
        int current = ((Integer)cur).intValue();
        while (currentToken.equals("+") || currentToken.equals("-"))
@@ -335,9 +356,24 @@ public class Parser
        Object cur = parseFactor();
        if (cur instanceof String)
        {
-           return cur;
+           try
+           {
+               cur = Integer.parseInt((String)cur);
+           }
+           catch(NumberFormatException e)
+           {
+               if (currentToken.equals("*") || 
+               currentToken.equals("/") ||
+               currentToken.equals("mod"))
+               {
+                   throw new Error("Cannot use operator " + currentToken +
+                           " between a String and an Integer");
+               }
+               return cur;
+           }
        }
        int current = ((Integer)cur).intValue();
+       
        while (currentToken.equals("*") || 
                currentToken.equals("/") ||
                currentToken.equals("mod"))

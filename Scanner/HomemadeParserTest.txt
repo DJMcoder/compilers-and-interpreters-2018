@@ -1,4 +1,5 @@
 BEGIN
+	
 	WRITELN('Enter a number: ');
 	READLN(x);
 	WRITELN('Your number was: ', x);
