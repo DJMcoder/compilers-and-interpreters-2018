@@ -1,7 +1,9 @@
 BEGIN
-	
-	WRITELN('Enter a number: ');
+	WRITELN('Enter number x: ');
 	READLN(x);
-	WRITELN('Your number was: ', x);
-	WRITELN('Your processed number is: ', x * 4);
+	WRITELN('Enter number y: ');
+	READLN(y);
+	WRITELN('x = ', x);
+	WRITELN('y = ', y);
+	WRITELN('x * y = ', (x * y));
 END;

@@ -182,6 +182,11 @@ public class Parser
        eat(";");
    }
    
+   /**
+    * Parses one or more strings, connected by a comma
+    * 
+    * @return a single string, concatenating the multiple strings
+    */
    public String parseStrings()
    {
        String current = parseString();
@@ -193,6 +198,11 @@ public class Parser
        return current;
    }
    
+   /**
+    * Parses a single string by removing the surrounding quotes
+    * 
+    * @return the parsed string
+    */
    public String parseString()
    {
        if (currentToken.charAt(0) == '\'')
@@ -267,6 +277,16 @@ public class Parser
    }
    */
    
+   /**
+    * Parses a factor, which can be:
+    *   - factor        => returns -1 times the next factor
+    *   ( expr )        => returns the expr within the ( )
+    *   id              => returns the value of the variable
+    *   num             => returns the value of the number
+    * where num is a number and id is an identifier.
+    * 
+    * @return the parsed factor
+    */
    private Object parseFactor()
    {
        // - factor
@@ -315,11 +335,17 @@ public class Parser
        }
    }
    
-   /*private boolean parseBoolean()
-   {
-       
-   }*/
-   
+   /**
+    * Parses an expr, which can be:
+    *   expr (+ | -) term       => returns either the sum or difference
+    *                              of the two values
+    *   term                    => returns the value of the term
+    *   string                  => returns the string
+    *   
+    *   TODO: string checking
+    *   
+    * @return the parsed expr
+    */
    private Object parseExpr()
    {
        Object cur = parseTerm();
@@ -351,6 +377,32 @@ public class Parser
        return current;
    }
    
+   /**
+    * Converts an object to an Integer by either parsing a string or 
+    * class casting.
+    * 
+    * @param o
+    *   the object to convert
+    * @return the resulting integer
+    */
+   private static Integer convertToInt(Object o)
+   {
+       if (o instanceof String)
+       {
+           return Integer.parseInt((String)o);
+       }
+       return (Integer)o;
+   }
+   
+   /**
+    * Parses an term, which can be:
+    *   term (* | / | mod) factor   => returns the result of the
+    *                                  evaluated term
+    *   factor                      => returns the value of the factor
+    *   string                      => returns the string
+    *   
+    * @return the parsed term
+    */
    private Object parseTerm()
    {
        Object cur = parseFactor();
@@ -378,26 +430,43 @@ public class Parser
                currentToken.equals("/") ||
                currentToken.equals("mod"))
        {
-           if (currentToken.equals("*"))
-           {
-               eat("*");
-               current *= ((Integer)parseFactor()).intValue();
+           String operator = currentToken;
+           eat(operator);
+           int value;
+           try {
+               value = convertToInt(parseFactor());
            }
-           else if (currentToken.equals("/"))
+           catch(NumberFormatException | ClassCastException e)
            {
-               eat("/");
-               current /= ((Integer)parseFactor()).intValue();
+               throw new Error("Cannot use operator " + operator +
+                       " between an Integer and a String");
            }
-           else 
+           if (operator.equals("*"))
            {
-               eat("mod");
-               current %= ((Integer)parseFactor()).intValue();
+               current *= value;
            }
-           
+           else if (operator.equals("/"))
+           {
+               current /= value;
+           }
+           else if (operator.equals("mod"))
+           {
+               current %= value;
+           }
+           else
+           {
+               throw new Error("Invalid operator " + operator);
+           }
        }
        return Integer.valueOf(current);
    }
    
+   /**
+    * Parses all the statements on file ./HomemadeParserTest.txt
+    * 
+    * @param args
+    *   command line arguments
+    */
    public static void main(String[] args)
    {
        String filename =  "./HomemadeParserTest.txt";
