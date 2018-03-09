@@ -1,9 +1,13 @@
 package parser;
 import scanner.Scanner;
+import ast.*;
+import environment.Environment;
 import scanner.ScanErrorException;
 import java.io.*;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Parser uses the Scanner to read a file and process a language.
@@ -114,11 +118,11 @@ public class Parser
     * @postcondition number token has been eaten
     * @return the value of the parsed integer
     */
-   private int parseNumber()
+   private ast.Number parseNumber()
    {
        int res = Integer.parseInt(currentToken);
        eat(currentToken);
-       return res;
+       return new ast.Number(res);
    }
    
    /**
@@ -131,19 +135,20 @@ public class Parser
     * 
     * @precondition currentToken is WRITELN
     */
-   public void parseStatement()
+   public Statement parseStatement()
    {
        // BEGIN block
        if (currentToken.equals("BEGIN"))
        {
+           List<Statement> stmts = new ArrayList<Statement>();
            eat("BEGIN");
            while (!currentToken.equals("END"))
            {
-               parseStatement();
+               stmts.add(parseStatement());
            }
            eat("END");
            eat(";");
-           return;
+           return new Block(stmts);
        }
        // WRITELN statement
        if (currentToken.equals("WRITELN"))
@@ -151,10 +156,10 @@ public class Parser
            eat("WRITELN");
            eat("(");
            //System.out.println(parseStrings());
-           System.out.println(parseExpr());
+           Expression expr = parseExpr();
            eat(")");
            eat(";");
-           return;
+           return new Writeln(expr);
        }
        // READLN statement
        if (currentToken.equals("READLN"))
@@ -165,22 +170,22 @@ public class Parser
            eat(currentToken);
            eat(")");
            eat(";");
-           vars.put(var, read.nextLine());
-           return;
+           return new Readln(var);
        }
        // ensure identifier
        if (!Scanner.isLetter(currentToken.charAt((0))))
        {
            System.err.println("Error: invalid identifier " + currentToken);
            System.exit(1);
-           return;
+           return null;
        }
        // set variable
        String var = currentToken;
        eat(currentToken);
        eat(":=");
-       vars.put(var, parseExpr());
+       Expression expr = parseExpr();
        eat(";");
+       return new Assignment(var, expr);
    }
    
    /**
@@ -188,7 +193,7 @@ public class Parser
     * 
     * @return a single string, concatenating the multiple strings
     */
-   public String parseStrings()
+   public Text parseStrings()
    {
        String current = parseString();
        while (currentToken.charAt(0) == ',')
@@ -196,7 +201,7 @@ public class Parser
            eat(",");
            current += parseString();
        }
-       return current;
+       return new Text(current);
    }
    
    /**
@@ -288,19 +293,19 @@ public class Parser
     * 
     * @return the parsed factor
     */
-   private Object parseFactor()
+   private Expression parseFactor()
    {
        // - factor
        if (currentToken.equals("-"))
        {
            eat("-");
-           return Integer.valueOf(-1 * ((Integer)parseFactor()).intValue());
+           return new BinOp(new ast.Number(0), "-", parseFactor());
        }
        // ( expr )
        else if (currentToken.equals("("))
        {
            eat("(");
-           Object res = parseExpr();
+           Expression res = parseExpr();
            //System.out.println(res);
            eat(")");
            return res;
@@ -313,21 +318,16 @@ public class Parser
        // identifier
        else if (Scanner.isLetter(currentToken.charAt(0)))
        {
-           Object res = vars.get(currentToken);
-           if (res == null)
-           {
-               throw new IllegalArgumentException("Variable '" + currentToken
-                       + "' does not exist");
-           }
+           Variable res = new Variable(currentToken);
            eat(currentToken);
            return res;
        }
-       // number
+       // number or string
        else
        {
            try
            {
-               return Integer.valueOf(parseNumber());
+               return parseNumber();
            }
            catch(NumberFormatException e)
            {
@@ -347,35 +347,21 @@ public class Parser
     *   
     * @return the parsed expr
     */
-   private Object parseExpr()
+   private Expression parseExpr()
    {
-       Object cur = parseTerm();
-       if (cur instanceof String)
+       Expression cur = parseTerm();
+       if (cur instanceof Text)
        {
-           try
-           {
-               cur = Integer.parseInt((String)cur);
-           }
-           catch(NumberFormatException e)
-           {
-               return cur;
-           }
+           return cur;
        }
-       int current = ((Integer)cur).intValue();
-       while (currentToken.equals("+") || currentToken.equals("-"))
+       
+       if (currentToken.equals("+") || currentToken.equals("-"))
        {
-           if (currentToken.equals("+"))
-           {
-               eat("+");
-               current += ((Integer)parseTerm()).intValue();
-           }
-           else
-           {
-               eat("-");
-               current -= ((Integer)parseTerm()).intValue();
-           }
+           String operator = currentToken;
+           eat(currentToken);
+           return new BinOp(cur, operator, parseExpr());
        }
-       return current;
+       return cur;
    }
    
    /**
@@ -404,9 +390,9 @@ public class Parser
     *   
     * @return the parsed term
     */
-   private Object parseTerm()
+   private Expression parseTerm()
    {
-       Object cur = parseFactor();
+       Object cur = parseTerm(); // TODO: AVOID LEFT RECURSION
        if (cur instanceof String)
        {
            try
@@ -422,12 +408,13 @@ public class Parser
                    throw new Error("Cannot use operator " + currentToken +
                            " between a String and an Integer");
                }
-               return cur;
+               return new Text((String)cur);
            }
        }
+       
        int current = ((Integer)cur).intValue();
        
-       while (currentToken.equals("*") || 
+       if (currentToken.equals("*") || 
                currentToken.equals("/") ||
                currentToken.equals("mod"))
        {
