@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 /**
+ * Parser uses the Scanner to read a file and process a language.
  * 
  * @author David Melisso
  * @version February 28, 2018

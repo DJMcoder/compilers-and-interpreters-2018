@@ -481,7 +481,7 @@ public class Scanner
                     {
                         return;
                     }
-                    //System.out.println(token);
+                    System.out.println(token);
                     tokens.add(token);
                 } 
                 catch (ScanErrorException e)
