@@ -59,7 +59,7 @@ public class Scanner
         try
         {
             int read = in.read();
-            if (read == -1)
+            if (read == -1 || read == '.')
             {
                 eof = true;
             } 
@@ -84,6 +84,7 @@ public class Scanner
      * @param error - the error message to throw
      * 
      * @throws ScanErrorException
+     *  if there is no next char, throw a ScanErrorException with the given reason
      */
     private void getNextCharOrError(String error) throws ScanErrorException
     {
@@ -106,6 +107,7 @@ public class Scanner
      * @param expected
      *            - the character to compare to the current character
      * @throws ScanErrorException
+     *  if the expected character does not match the current character
      */
     private void eat(char expected) throws ScanErrorException
     {
@@ -215,6 +217,8 @@ public class Scanner
      * 
      * @return the read number as a String
      * @throws ScanErrorException
+     *  if the first character is not a digit, or if the digits are directly followed
+     *  by letters
      */
     private String scanNumber() throws ScanErrorException
     {
@@ -261,6 +265,8 @@ public class Scanner
      * 
      * @return the read identifier as a String
      * @throws ScanErrorException
+     *  if the first character is not a letter, or if it is followed by an invalid 
+     *  character
      */
     private String scanIdentifier() throws ScanErrorException
     {
@@ -306,6 +312,8 @@ public class Scanner
      * 
      * @return the read operand as a String
      * @throws ScanErrorException
+     *  if the first character is not an operator, or if it is directly followed
+     *  by an operator
      */
     private String scanOperand() throws ScanErrorException
     {
@@ -315,9 +323,9 @@ public class Scanner
         {
             res += currentChar;
             if (currentChar == '<' || 
-                currentChar == '>' || 
-                currentChar == '=' ||
-                currentChar == ':')
+                    currentChar == '>' || 
+                    currentChar == '=' ||
+                    currentChar == ':')
             {
                 getNextChar();
                 if (currentChar == '=')
@@ -340,7 +348,8 @@ public class Scanner
                             res + "', expected a valid operand");
                 }
             }
-            else {
+            else 
+            {
                 getNextChar();
             }
         } 
@@ -352,6 +361,13 @@ public class Scanner
         return res;
     }
     
+    /**
+     * Scans a string, in single quotes, and returns it.
+     * 
+     * @return the string, including the quotes
+     * @throws ScanErrorException
+     *  if the characters do not match the format of a string
+     */
     private String scanString() throws ScanErrorException
     {
         String res = "\'";
@@ -381,6 +397,8 @@ public class Scanner
      * Skips leading whitespace then returns the next token.
      * 
      * @return the string with the next token
+     * @throws ScanErrorException
+     *  if the token is invalid
      */
     public String nextToken() throws ScanErrorException
     {

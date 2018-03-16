@@ -1,10 +1,9 @@
 BEGIN
-	WRITELN(4 + (-3));
 	WRITELN('Enter number x: ');
 	READLN(x);
 	WRITELN('Enter number y: ');
 	READLN(y);
 	WRITELN('x = ', x);
 	WRITELN('y = ', y);
-	WRITELN('x * y = ', (x * y));
+	WRITELN('x * y = ', x * y);
 END;

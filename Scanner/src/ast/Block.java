@@ -37,6 +37,7 @@ public class Block extends Statement
      * @param env
      *  The environment to execute the statements in
      * @throws ASTException
+     *  if there was an error executing one of the statements
      */
     public void exec(Environment env) throws ASTException
     {

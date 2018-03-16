@@ -33,7 +33,7 @@ public class Readln extends Statement
      * @param env
      *  The environment in which the variables are stored
      */
-    public void exec(Environment env) throws ASTException
+    public void exec(Environment env)
     {
         env.setVariable(var, env.getScanner().nextLine());
     }

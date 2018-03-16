@@ -13,13 +13,6 @@ package scanner;
 public class ScanErrorException extends Exception 
 {
     /**
-     * default constructor for ScanErrorObjects.
-     */
-    public ScanErrorException() 
-    {
-        super();
-    }
-    /**
      * Constructor for ScanErrorObjects that includes a reason for the error.
      * @param reason - the reason for the error
      */

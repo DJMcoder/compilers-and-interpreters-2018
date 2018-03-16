@@ -36,6 +36,8 @@ public class Assignment extends Statement
      * 
      * @param env
      *  The environment in which to set the variable
+     * @throws ASTException
+     *  if there was an error evaluting the expression
      */
     public void exec(Environment env) throws ASTException
     {
