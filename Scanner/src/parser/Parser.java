@@ -14,10 +14,10 @@ import java.util.HashMap;
  */
 public class Parser
 {
-   private Scanner scanner;
-   private java.util.Scanner read;
-   private String currentToken;
-   private Map<String, Object> vars;
+    private Scanner scanner;
+    private java.util.Scanner read;
+    private String currentToken;
+    private Map<String, Object> vars;
    
    /**
     * Constructs a Parser using a Scanner as input and sets the first
@@ -26,21 +26,21 @@ public class Parser
     * @param s
     *       the scanner to input from
     */
-   public Parser(Scanner s) 
-   {
-       vars = new HashMap<String, Object>();
-       read = new java.util.Scanner(System.in);
-       scanner = s;
-       try 
-       {
-           currentToken = scanner.nextToken();
-       }
-       catch (ScanErrorException e)
-       {
-           e.printStackTrace();
-           System.exit(1);
-       }
-   }
+    public Parser(Scanner s) 
+    {
+        vars = new HashMap<String, Object>();
+        read = new java.util.Scanner(System.in);
+        scanner = s;
+        try 
+        {
+            currentToken = scanner.nextToken();
+        }
+        catch (ScanErrorException e)
+        {
+            e.printStackTrace();
+            System.exit(1);
+        }
+    }
    
    /**
     * Method: hasNext
@@ -49,63 +49,43 @@ public class Parser
     * 
     * @return false if the input stream has ended; otherwise, true
     */
-   public boolean hasNext()
-   {
-       return scanner.hasNext();
-   }
+    public boolean hasNext()
+    {
+        return scanner.hasNext();
+    }
    
    /**
-    * Checks if currentToken matches the expected character;
+    * Checks if currentToken matches the expected token;
     * if it does, moves the scanner to the next token,
     * otherwise, throws an IllegalArgumentException
     * 
     * @param expected
-    *       the toke  to expect
+    *       the token to expect
     * @throws IllegalArgumentException
+    *   throws if the expected token is not match the currentToken
     */
-   private void eat(String expected) throws IllegalArgumentException
-   {
-       if (currentToken.equals(expected))
-       {
-           try
-           {
-               currentToken = scanner.nextToken();
-           }
-           catch (ScanErrorException e)
-           {
-               e.printStackTrace();
-               System.exit(1);
-           }
-       }
-       else
-       {
-           throw new IllegalArgumentException(
+    private void eat(String expected) throws IllegalArgumentException
+    {
+        if (currentToken.equals(expected))
+        {
+            try
+            {
+                currentToken = scanner.nextToken();
+            }
+            catch (ScanErrorException e)
+            {
+                e.printStackTrace();
+                System.exit(1);
+            }
+        }
+        else
+        {
+            throw new IllegalArgumentException(
                    "Unexpected token " + currentToken + 
                    ", expected " + expected);
            
-       }
-   }
-   
-   /**
-    * Parses an IF statement
-    * 
-    * @precondition current token begins an IF statement
-    * @postcondition: all tokens in statement have been
-    *                 eaten; current token is first one
-    *                 after the IF statement
-    */
-   private void parseIf()
-   {
-       eat("IF");
-       eat(currentToken);
-       eat(currentToken);
-       eat(currentToken);
-       eat("THEN");
-       eat(currentToken);
-       eat(currentToken);
-       eat(currentToken);
-       eat(";");
-   }
+        }
+    }
    
    /**
     * Scans the current token as an integer and returns it
@@ -114,12 +94,12 @@ public class Parser
     * @postcondition number token has been eaten
     * @return the value of the parsed integer
     */
-   private int parseNumber()
-   {
-       int res = Integer.parseInt(currentToken);
-       eat(currentToken);
-       return res;
-   }
+    private int parseNumber()
+    {
+        int res = Integer.parseInt(currentToken);
+        eat(currentToken);
+        return res;
+    }
    
    /**
     * Parses the statement:
@@ -131,89 +111,89 @@ public class Parser
     * 
     * @precondition currentToken is WRITELN
     */
-   public void parseStatement()
-   {
-       // BEGIN block
-       if (currentToken.equals("BEGIN"))
-       {
-           eat("BEGIN");
-           while (!currentToken.equals("END"))
-           {
-               parseStatement();
-           }
-           eat("END");
-           eat(";");
-           return;
-       }
-       // WRITELN statement
-       if (currentToken.equals("WRITELN"))
-       {
-           eat("WRITELN");
-           eat("(");
-           //System.out.println(parseStrings());
-           System.out.println(parseExpr());
-           eat(")");
-           eat(";");
-           return;
-       }
-       // READLN statement
-       if (currentToken.equals("READLN"))
-       {
-           eat("READLN");
-           eat("(");
-           String var = currentToken;
-           eat(currentToken);
-           eat(")");
-           eat(";");
-           vars.put(var, read.nextLine());
-           return;
-       }
-       // ensure identifier
-       if (!Scanner.isLetter(currentToken.charAt((0))))
-       {
-           System.err.println("Error: invalid identifier " + currentToken);
-           System.exit(1);
-           return;
-       }
-       // set variable
-       String var = currentToken;
-       eat(currentToken);
-       eat(":=");
-       vars.put(var, parseExpr());
-       eat(";");
-   }
+    public void parseStatement()
+    {
+        // BEGIN block
+        if (currentToken.equals("BEGIN"))
+        {
+            eat("BEGIN");
+            while (!currentToken.equals("END"))
+            {
+                parseStatement();
+            }
+            eat("END");
+            eat(";");
+            return;
+        }
+        // WRITELN statement
+        if (currentToken.equals("WRITELN"))
+        {
+            eat("WRITELN");
+            eat("(");
+            //System.out.println(parseStrings());
+            System.out.println(parseExpr());
+            eat(")");
+            eat(";");
+            return;
+        }
+        // READLN statement
+        if (currentToken.equals("READLN"))
+        {
+            eat("READLN");
+            eat("(");
+            String var = currentToken;
+            eat(currentToken);
+            eat(")");
+            eat(";");
+            vars.put(var, read.nextLine());
+            return;
+        }
+        // ensure identifier
+        if (!Scanner.isLetter(currentToken.charAt((0))))
+        {
+            System.err.println("Error: invalid identifier " + currentToken);
+            System.exit(1);
+            return;
+        }
+        // set variable
+        String var = currentToken;
+        eat(currentToken);
+        eat(":=");
+        vars.put(var, parseExpr());
+        eat(";");
+    }
    
    /**
     * Parses one or more strings, connected by a comma
     * 
     * @return a single string, concatenating the multiple strings
     */
-   public String parseStrings()
-   {
-       String current = parseString();
-       while (currentToken.charAt(0) == ',')
-       {
-           eat(",");
-           current += parseString();
-       }
-       return current;
-   }
+    public String parseStrings()
+    {
+        String current = parseString();
+        while (currentToken.charAt(0) == ',')
+        {
+            eat(",");
+            current += parseString();
+        }
+        return current;
+    }
    
    /**
     * Parses a single string by removing the surrounding quotes
     * 
     * @return the parsed string
     */
-   public String parseString()
-   {
-       if (currentToken.charAt(0) == '\'')
-       {
-           String res = currentToken.substring(1, currentToken.length() - 1);
-           eat(currentToken);
-           return res;
-       }
-       return parseExpr().toString();
-   }
+    public String parseString()
+    {
+        if (currentToken.charAt(0) == '\'')
+        {
+            String res = currentToken.substring(1, currentToken.length() - 1);
+            eat(currentToken);
+            return res;
+        }
+        return parseExpr().toString();
+    }
    
    /*private boolean parseBool()
    {
@@ -288,53 +268,53 @@ public class Parser
     * 
     * @return the parsed factor
     */
-   private Object parseFactor()
-   {
-       // - factor
-       if (currentToken.equals("-"))
-       {
-           eat("-");
-           return Integer.valueOf(-1 * ((Integer)parseFactor()).intValue());
-       }
-       // ( expr )
-       else if (currentToken.equals("("))
-       {
-           eat("(");
-           Object res = parseExpr();
-           //System.out.println(res);
-           eat(")");
-           return res;
-       }
+    private Object parseFactor()
+    {
+        // - factor
+        if (currentToken.equals("-"))
+        {
+            eat("-");
+            return Integer.valueOf(-1 * ((Integer)parseFactor()).intValue());
+        }
+        // ( expr )
+        else if (currentToken.equals("("))
+        {
+            eat("(");
+            Object res = parseExpr();
+            //System.out.println(res);
+            eat(")");
+            return res;
+        }
        /*else if (currentToken.equals(","))
        {
            eat(",");
            return null;
        }*/
        // identifier
-       else if (Scanner.isLetter(currentToken.charAt(0)))
-       {
-           Object res = vars.get(currentToken);
-           if (res == null)
-           {
-               throw new IllegalArgumentException("Variable '" + currentToken
+        else if (Scanner.isLetter(currentToken.charAt(0)))
+        {
+            Object res = vars.get(currentToken);
+            if (res == null)
+            {
+                throw new IllegalArgumentException("Variable '" + currentToken
                        + "' does not exist");
-           }
-           eat(currentToken);
-           return res;
-       }
-       // number
-       else
-       {
-           try
-           {
-               return Integer.valueOf(parseNumber());
-           }
-           catch(NumberFormatException e)
-           {
-               return parseStrings();
-           }
-       }
-   }
+            }
+            eat(currentToken);
+            return res;
+        }
+        // number
+        else
+        {
+            try
+            {
+                return Integer.valueOf(parseNumber());
+            }
+            catch(NumberFormatException e)
+            {
+                return parseStrings();
+            }
+        }
+    }
    
    /**
     * Parses an expr, which can be:
@@ -343,40 +323,39 @@ public class Parser
     *   term                    => returns the value of the term
     *   string                  => returns the string
     *   
-    *   TODO: string checking
     *   
     * @return the parsed expr
     */
-   private Object parseExpr()
-   {
-       Object cur = parseTerm();
-       if (cur instanceof String)
-       {
-           try
-           {
-               cur = Integer.parseInt((String)cur);
-           }
-           catch(NumberFormatException e)
-           {
-               return cur;
-           }
-       }
-       int current = ((Integer)cur).intValue();
-       while (currentToken.equals("+") || currentToken.equals("-"))
-       {
-           if (currentToken.equals("+"))
-           {
-               eat("+");
-               current += ((Integer)parseTerm()).intValue();
-           }
-           else
-           {
-               eat("-");
-               current -= ((Integer)parseTerm()).intValue();
-           }
-       }
-       return current;
-   }
+    private Object parseExpr()
+    {
+        Object cur = parseTerm();
+        if (cur instanceof String)
+        {
+            try
+            {
+                cur = Integer.parseInt((String)cur);
+            }
+            catch(NumberFormatException e)
+            {
+                return cur;
+            }
+        }
+        int current = ((Integer)cur).intValue();
+        while (currentToken.equals("+") || currentToken.equals("-"))
+        {
+            if (currentToken.equals("+"))
+            {
+                eat("+");
+                current += ((Integer)parseTerm()).intValue();
+            }
+            else
+            {
+                eat("-");
+                current -= ((Integer)parseTerm()).intValue();
+            }    
+        }
+        return current;
+    }
    
    /**
     * Converts an object to an Integer by either parsing a string or 
@@ -386,14 +365,14 @@ public class Parser
     *   the object to convert
     * @return the resulting integer
     */
-   private static Integer convertToInt(Object o)
-   {
-       if (o instanceof String)
-       {
-           return Integer.parseInt((String)o);
-       }
-       return (Integer)o;
-   }
+    private static Integer convertToInt(Object o)
+    {
+        if (o instanceof String)
+        {
+            return Integer.parseInt((String)o);
+        }
+        return (Integer)o;
+    }
    
    /**
     * Parses an term, which can be:
@@ -404,63 +383,64 @@ public class Parser
     *   
     * @return the parsed term
     */
-   private Object parseTerm()
-   {
-       Object cur = parseFactor();
-       if (cur instanceof String)
-       {
-           try
-           {
-               cur = Integer.parseInt((String)cur);
-           }
-           catch(NumberFormatException e)
-           {
-               if (currentToken.equals("*") || 
-               currentToken.equals("/") ||
-               currentToken.equals("mod"))
-               {
-                   throw new Error("Cannot use operator " + currentToken +
+    private Object parseTerm()
+    {
+        Object cur = parseFactor();
+        if (cur instanceof String)
+        {
+            try
+            {
+                cur = Integer.parseInt((String)cur);
+            }
+            catch(NumberFormatException e)
+            {
+                if (currentToken.equals("*") || 
+                        currentToken.equals("/") ||
+                        currentToken.equals("mod"))
+                {
+                    throw new Error("Cannot use operator " + currentToken +
                            " between a String and an Integer");
-               }
-               return cur;
-           }
-       }
-       int current = ((Integer)cur).intValue();
+                }
+                return cur;
+            }
+        }
+        int current = ((Integer)cur).intValue();
        
-       while (currentToken.equals("*") || 
-               currentToken.equals("/") ||
-               currentToken.equals("mod"))
-       {
-           String operator = currentToken;
-           eat(operator);
-           int value;
-           try {
-               value = convertToInt(parseFactor());
-           }
-           catch(NumberFormatException | ClassCastException e)
-           {
-               throw new Error("Cannot use operator " + operator +
+        while (currentToken.equals("*") || 
+                currentToken.equals("/") ||
+                currentToken.equals("mod"))
+        {
+            String operator = currentToken;
+            eat(operator);
+            int value;
+            try 
+            {
+                value = convertToInt(parseFactor());
+            }
+            catch(NumberFormatException | ClassCastException e)
+            {
+                throw new Error("Cannot use operator " + operator +
                        " between an Integer and a String");
-           }
-           if (operator.equals("*"))
-           {
-               current *= value;
-           }
-           else if (operator.equals("/"))
-           {
-               current /= value;
-           }
-           else if (operator.equals("mod"))
-           {
-               current %= value;
-           }
-           else
-           {
-               throw new Error("Invalid operator " + operator);
-           }
-       }
-       return Integer.valueOf(current);
-   }
+            }
+            if (operator.equals("*"))
+            {
+                current *= value;
+            }
+            else if (operator.equals("/"))
+            {
+                current /= value;
+            }
+            else if (operator.equals("mod"))
+            {
+                current %= value;
+            }
+            else
+            {
+                throw new Error("Invalid operator " + operator);
+            }
+        }
+        return Integer.valueOf(current);
+    }
    
    /**
     * Parses all the statements on file ./HomemadeParserTest.txt
@@ -468,24 +448,24 @@ public class Parser
     * @param args
     *   command line arguments
     */
-   public static void main(String[] args)
-   {
-       String filename =  "./HomemadeParserTest.txt";
-       try
-       {
-           Parser p = (new Parser(
-                   new Scanner(
+    public static void main(String[] args)
+    {
+        String filename =  "./HomemadeParserTest.txt";
+        try
+        {
+            Parser p = (new Parser(
+                    new Scanner(
                            new FileInputStream(
                                    new File(filename)))));
            /*while(p.hasNext())
            {
                p.parseStatement();
            }*/
-           p.parseStatement();
-       }
-       catch (FileNotFoundException e)
-       {
-           e.printStackTrace();
-       }
-   }
+            p.parseStatement();
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+    }
 }

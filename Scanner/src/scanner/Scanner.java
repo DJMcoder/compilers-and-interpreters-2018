@@ -59,7 +59,7 @@ public class Scanner
         try
         {
             int read = in.read();
-            if (read == -1)
+            if (read == -1 || (char)read == '.')
             {
                 eof = true;
             } 
@@ -89,7 +89,7 @@ public class Scanner
     {
         if (hasNext())
         {
-            getNextChar();
+            eat(currentChar);
         }
         else
         {
@@ -223,14 +223,14 @@ public class Scanner
         if (isDigit(currentChar))
         {
             res += currentChar;
-            getNextChar();
+            eat(currentChar);
 
             while (hasNext() && !isWhiteSpace(currentChar))
             {
                 if (isDigit(currentChar))
                 {
                     res += currentChar;
-                    getNextChar();
+                    eat(currentChar);
                 } 
                 else if (isOperand(currentChar))
                 {
@@ -269,14 +269,14 @@ public class Scanner
         if (isLetter(currentChar))
         {
             res += currentChar;
-            getNextChar();
+            eat(currentChar);
 
             while (hasNext() && !isWhiteSpace(currentChar))
             {
                 if (isDigit(currentChar) || isLetter(currentChar))
                 {
                     res += currentChar;
-                    getNextChar();
+                    eat(currentChar);
                 } 
                 else if (isOperand(currentChar))
                 {
@@ -319,16 +319,16 @@ public class Scanner
                 currentChar == '=' ||
                 currentChar == ':')
             {
-                getNextChar();
+                eat(currentChar);
                 if (currentChar == '=')
                 {
                     res += currentChar;
-                    getNextChar();
+                    eat(currentChar);
                 }
                 else if (res.equals("<") && currentChar == '>')
                 {
                     res += currentChar;
-                    getNextChar();
+                    eat(currentChar);
                 }
                 else if(!isOperand(currentChar))
                 {
@@ -341,7 +341,7 @@ public class Scanner
                 }
             }
             else {
-                getNextChar();
+                eat(currentChar);
             }
         } 
         else
@@ -366,7 +366,7 @@ public class Scanner
                     throw new ScanErrorException("String never closed");
                 }
                 res += currentChar;
-                getNextChar();
+                eat(currentChar);
             }
             eat('\'');
             return res + "\'";
@@ -386,7 +386,7 @@ public class Scanner
     {
         while (hasNext() && isWhiteSpace(currentChar))
         {
-            getNextChar();
+            eat(currentChar);
         }
         if (currentChar == '\'')
         {
@@ -409,7 +409,7 @@ public class Scanner
         {
             while (currentChar != '\n')
             {
-                getNextChar();
+                eat(currentChar);
                 
             }
             return nextToken();
@@ -434,7 +434,7 @@ public class Scanner
                     }
                     else
                     {
-                        getNextChar();
+                        eat(currentChar);
                         return nextToken();
                     }
                 } 
@@ -444,7 +444,7 @@ public class Scanner
                     getNextCharOrError("Multiline comment never closed.");
                 }
             }
-            getNextChar();
+            eat(currentChar);
             return nextToken();
         } 
         else
