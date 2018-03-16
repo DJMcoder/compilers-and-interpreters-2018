@@ -446,7 +446,7 @@ public class Parser
                throw new Error("Invalid operator " + operator);
            }
        }
-       return Integer.valueOf(current);
+       return new ast.Number(Integer.valueOf(current));
    }
    
    /**
