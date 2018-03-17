@@ -114,6 +114,11 @@ public class Parser
     *   IF cond THEN stmt; where the program executes stmt if cond is true
     *   IF cond THEN stmt1 ELSE stmt2; where the program executes stmt1 if cond is true,
     *       and executes stmt2 if cond is false
+    *   WHILE cond DO stmt; where the program executes stmt while cond is true
+    *   FOR assignment TO number DO stmt; where the program increments the variable in 
+    *       the assignment towards that number and executes stmt every interval
+    *   BREAK; where the program exits the current loop
+    *   CONTINUE; where the program skips the current iteration of the loop
     *   var := num; where the program sets the variable var to num
     * 
     * @precondition currentToken is WRITELN
@@ -134,6 +139,7 @@ public class Parser
             eat(";");
             return new Block(stmts);
         }
+        // IF statement
         if (currentToken.equals("IF"))
         {
             eat("IF");
@@ -146,6 +152,63 @@ public class Parser
                 return new If(cond, stmt, parseStatement());
             }
             return new If(cond, stmt);
+        }
+        // WHILE loop statement
+        if (currentToken.equals("WHILE"))
+        {
+            eat("WHILE");
+            Condition cond = parseBool();
+            eat("DO");
+            return new While(cond, parseStatement());
+        }
+        // FOR loop statement
+        if (currentToken.equals("FOR"))
+        {
+            eat("FOR");
+            String var = currentToken;
+            eat(currentToken);
+            eat(":=");
+            Expression expr = parseExpr();
+            eat("TO");
+            Expression limit = parseExpr();
+            eat("DO");
+            Statement stmt = parseStatement();
+            
+            Variable variable = new Variable(var);
+            Assignment initialAssignment = new Assignment(var, expr);
+            Expression increment = new BinOp(variable, "+", new ast.Number(1));
+            Statement incrementAssignment = new Assignment(var, increment);
+            
+            // create loop sub-statement and increment
+            List<Statement> loopComponents = new ArrayList<Statement>();
+            loopComponents.add(stmt);
+            loopComponents.add(incrementAssignment);
+            Statement loopStatement = new Block(loopComponents);
+            
+            // create loop
+            Condition loopCondition = new Condition(variable,"<=",limit);
+            Statement loop = new While(loopCondition, loopStatement);
+            
+            // create loop and initial assignment
+            List<Statement> assignmentAndLoop = new ArrayList<Statement>();
+            assignmentAndLoop.add(initialAssignment);
+            assignmentAndLoop.add(loop);
+            
+            return new Block(assignmentAndLoop);
+        }
+        // BREAK statement
+        if (currentToken.equals("BREAK"))
+        {
+            eat("BREAK");
+            eat(";");
+            return new Break();
+        }
+        // CONTINUE statement
+        if (currentToken.equals("CONTINUE"))
+        {
+            eat("CONTINUE");
+            eat(";");
+            return new Continue();
         }
         // WRITELN statement
         if (currentToken.equals("WRITELN"))

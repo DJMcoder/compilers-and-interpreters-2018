@@ -69,7 +69,7 @@ public class BinOp extends Expression
      *   the object to convert
      * @return the resulting integer
      */
-    protected static Integer convertToInt(Object o)
+    public static Integer convertToInt(Object o)
     {
         if (o instanceof String)
         {

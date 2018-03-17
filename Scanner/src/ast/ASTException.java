@@ -12,7 +12,7 @@ package ast;
 public class ASTException extends Exception
 {
     /**
-     * default constructor for ASTErrorObjects.
+     * default constructor for ASTException.
      */
     public ASTException() 
     {

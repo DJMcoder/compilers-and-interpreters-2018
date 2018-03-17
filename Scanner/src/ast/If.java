@@ -6,6 +6,14 @@ import environment.Environment;
  * If is a Statement which evaluates its "then" sub-statement if its condition is true.
  * It can also have an "else" sub-statement which evaluates otherwise.
  * 
+ * If Statements come in the forms:
+ * 
+ * IF cond THEN stmt
+ * IF cond THEN stmt ELSE stmt2
+ * 
+ * Where cond is the condition, stmt is the statment to be evaluated if cond is true,
+ * and stmt2 is the statement to be evaluated if cond if false
+ * 
  * @version 3/16/18
  * @author David Melisso
  *
