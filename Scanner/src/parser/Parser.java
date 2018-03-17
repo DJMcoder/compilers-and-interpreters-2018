@@ -282,8 +282,17 @@ public class Parser
         return new Text(parseExpr());
     }
    
-   private Condition parseBool()
-   {
+    /**
+     * Parses a boolean (condition), which can be:
+     * 
+     * expr; where the expression is evaluated as a boolean
+     * expr op expr; where the expression is compared to another expression with a
+     *      comparison operator
+     * 
+     * @return the Condition which represents the boolean
+     */
+    private Condition parseBool()
+    {
        /*
        if (currentToken.equals("TRUE"))
        {
@@ -300,31 +309,24 @@ public class Parser
            eat("NOT");
            return !parseBool();
        }
-       if (currentToken.equals("("))
-       {
-           eat("(");
-           boolean bool = parseBool();
-           eat(")");
-           return bool;
-       }
        */
        
-      Expression expr1 = parseExpr();
+        Expression expr1 = parseExpr();
            
-      if (currentToken.equals(">") ||
-              currentToken.equals("<") ||
-              currentToken.equals(">=") ||
-              currentToken.equals("<=") ||
-              currentToken.equals("<>") ||
-              currentToken.equals("="))
+        if (currentToken.equals(">") ||
+                currentToken.equals("<") ||
+                currentToken.equals(">=") ||
+                currentToken.equals("<=") ||
+                currentToken.equals("<>") ||
+                currentToken.equals("="))
            
-       {
-          String op = currentToken;
-          eat(op);
-          return new Condition(expr1, op, parseExpr());
-       }
-      return new Condition(expr1);
-   }
+        {
+            String op = currentToken;
+            eat(op);
+            return new Condition(expr1, op, parseExpr());
+        }
+        return new Condition(expr1);
+    }
    
    /**
     * Parses a factor, which can be:

@@ -14,8 +14,13 @@ public class Break extends Statement
 
     /**
      * Throws a BreakException.
+     * 
+     * @param env
+     *  the current environment
+     * @throws BreakException   
+     *  always
      */
-    public void exec(Environment env) throws ASTException
+    public void exec(Environment env) throws BreakException
     {
         throw new BreakException();
     }

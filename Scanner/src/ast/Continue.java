@@ -14,8 +14,13 @@ public class Continue extends Statement
 
     /**
      * Throws a ContinueException.
+     * 
+     * @param env
+     *  the current environment
+     * @throws ContinueException   
+     *  always
      */
-    public void exec(Environment env) throws ASTException
+    public void exec(Environment env) throws ContinueException
     {
         throw new ContinueException();
     }
