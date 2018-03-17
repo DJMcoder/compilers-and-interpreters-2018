@@ -3,7 +3,7 @@ package ast;
 import environment.Environment;
 
 /**
- * Statement is a line of code which can be executed
+ * Statement is a line of code which can be executed.
  * 
  * @version 3/16/18
  * @author David Melisso

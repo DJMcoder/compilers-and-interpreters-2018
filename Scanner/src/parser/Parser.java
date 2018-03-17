@@ -111,6 +111,9 @@ public class Parser
     *   WRITELN(num); where the program prints the integer num
     *   READLN(var); where the program reads user input and sets it to 
     *       the variable var
+    *   IF cond THEN stmt; where the program executes stmt if cond is true
+    *   IF cond THEN stmt1 ELSE stmt2; where the program executes stmt1 if cond is true,
+    *       and executes stmt2 if cond is false
     *   var := num; where the program sets the variable var to num
     * 
     * @precondition currentToken is WRITELN
@@ -130,6 +133,19 @@ public class Parser
             eat("END");
             eat(";");
             return new Block(stmts);
+        }
+        if (currentToken.equals("IF"))
+        {
+            eat("IF");
+            Condition cond = parseBool();
+            eat("THEN");
+            Statement stmt = parseStatement();
+            if (currentToken.equals("ELSE"))
+            {
+                eat("ELSE");
+                return new If(cond, stmt, parseStatement());
+            }
+            return new If(cond, stmt);
         }
         // WRITELN statement
         if (currentToken.equals("WRITELN"))
@@ -203,8 +219,9 @@ public class Parser
         return new Text(parseExpr());
     }
    
-   /*private boolean parseBool()
+   private Condition parseBool()
    {
+       /*
        if (currentToken.equals("TRUE"))
        {
            eat("TRUE");
@@ -227,44 +244,24 @@ public class Parser
            eat(")");
            return bool;
        }
-       // parse integer comparison
-       if (Scanner.isDigit(currentToken.charAt(0)))
-       {
-           int expr1 = parseExpr();
+       */
+       
+      Expression expr1 = parseExpr();
            
-           if (currentToken.equals(">"))
-           {
-               eat(">");
-               return expr1 > parseExpr();
-           }
-           if (currentToken.equals("<"))
-           {
-               eat("<");
-               return expr1 < parseExpr();
-           }
-           if (currentToken.equals(">="))
-           {
-               eat(">=");
-               return expr1 >= parseExpr();
-           }
-           if (currentToken.equals("<="))
-           {
-               eat("<=");
-               return expr1 <= parseExpr();
-           }
-           if (currentToken.equals("<>"))
-           {
-               eat("<>");
-               return expr1 != parseExpr();
-           }
-           if (currentToken.equals("="))
-           {
-               eat("=");
-               return expr1 == parseExpr();
-           }
+      if (currentToken.equals(">") ||
+              currentToken.equals("<") ||
+              currentToken.equals(">=") ||
+              currentToken.equals("<=") ||
+              currentToken.equals("<>") ||
+              currentToken.equals("="))
+           
+       {
+          String op = currentToken;
+          eat(op);
+          return new Condition(expr1, op, parseExpr());
        }
+      return new Condition(expr1);
    }
-   */
    
    /**
     * Parses a factor, which can be:

@@ -46,7 +46,7 @@ public class Text extends Expression
     
     /**
      * Creates Text from an Expression
-     * @param s
+     * @param e
      *  The Expression to store
      */
     public Text(Expression e)

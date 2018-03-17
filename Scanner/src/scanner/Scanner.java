@@ -18,6 +18,7 @@ public class Scanner
     private BufferedReader in;
     private char currentChar;
     private boolean eof;
+    private boolean readingString;
 
     /**
      * Scanner constructor for construction of a scanner that uses an InputStream
@@ -59,7 +60,7 @@ public class Scanner
         try
         {
             int read = in.read();
-            if (read == -1 || read == '.')
+            if (read == -1 || (read == '.' && !readingString))
             {
                 eof = true;
             } 
@@ -374,6 +375,7 @@ public class Scanner
         
         if (hasNext() && currentChar == '\'')
         {
+            readingString = true;
             eat('\'');
             while (currentChar != '\'')
             {
@@ -385,6 +387,7 @@ public class Scanner
                 getNextChar();
             }
             eat('\'');
+            readingString = false;
             return res + "\'";
         }
         throw new ScanErrorException("Unexpected character '" + 
@@ -434,6 +437,7 @@ public class Scanner
         } 
         else if (op.charAt(0) == '(' && currentChar == '*')
         {
+            readingString = true;
             getNextCharOrError("Multiline comment never closed.");
             char lastChar;
 
@@ -453,6 +457,7 @@ public class Scanner
                     else
                     {
                         getNextChar();
+                        readingString = false;
                         return nextToken();
                     }
                 } 
@@ -463,6 +468,7 @@ public class Scanner
                 }
             }
             getNextChar();
+            readingString = false;
             return nextToken();
         } 
         else

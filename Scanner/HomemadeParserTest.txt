@@ -1,9 +1,8 @@
 BEGIN
-	WRITELN('Enter number x: ');
+	WRITELN('Is this cool: ');
 	READLN(x);
-	WRITELN('Enter number y: ');
-	READLN(y);
-	WRITELN('x = ', x);
-	WRITELN('y = ', y);
-	WRITELN('x * y = ', x * y);
+	IF x = 'yes' THEN
+	WRITELN('I agree!');
+	ELSE
+	WRITELN('Aww....');
 END;
