@@ -35,6 +35,12 @@ public class Environment
         read = in;
     }
     
+    /**
+     * Copies another Environment
+     * 
+     * @param e
+     *  The previously made environment to copy from
+     */
     public Environment(Environment e)
     {
         read = e.getScanner();
@@ -46,6 +52,11 @@ public class Environment
         }
     }
     
+    /**
+     * Gets a list of variable identifiers stored in this environment
+     * 
+     * @return the list of variable identifiers as an array of Strings
+     */
     public String[] getVariables()
     {
         return vars.keySet().toArray(new String[0]);

@@ -17,6 +17,7 @@ END;
 END;
 *)
 
+(*
 BEGIN
 	//FUNCTION print(x): WRITELN(x);
 	FUNCTION fib(x): 
@@ -29,3 +30,4 @@ BEGIN
 	// func(3,5);
 	// WRITELN(func(3, 5));
 END;
+*)

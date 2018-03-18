@@ -105,6 +105,12 @@ public class Parser
         return new ast.Number(res);
     }
     
+    /**
+     * Eats function parameters (including parenthesis) filled in by expressions and 
+     * returns them as a List of Expressions
+     * 
+     * @return the List of Expressions within the parenthesis
+     */
     private List<Expression> eatParams()
     {
         List<Expression> params = new ArrayList<Expression>();
@@ -139,6 +145,7 @@ public class Parser
     *   FOR assignment TO number DO stmt; where the program increments the variable in 
     *       the assignment towards that number and executes stmt every interval
     *   BREAK; where the program exits the current loop
+    *   RETURN x; where the program exits the function and the function evaluates to x
     *   CONTINUE; where the program skips the current iteration of the loop
     *   FUNCTION func(params...): stmt; where the program defins a function named func
     *       with parameters params which runs the statement stmt
