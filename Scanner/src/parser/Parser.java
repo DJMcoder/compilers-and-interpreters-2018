@@ -104,6 +104,27 @@ public class Parser
         eat(currentToken);
         return new ast.Number(res);
     }
+    
+    private List<Expression> eatParams()
+    {
+        List<Expression> params = new ArrayList<Expression>();
+        eat("(");
+        
+        while (!currentToken.equals(")"))
+        {
+            params.add(parseExpr());
+            
+            while (currentToken.equals(","))
+            {
+                eat(",");
+                params.add(parseExpr());
+            }
+        }
+        
+        eat(")");
+        
+        return params;
+    }
    
    /**
     * Parses the statement:
@@ -119,6 +140,10 @@ public class Parser
     *       the assignment towards that number and executes stmt every interval
     *   BREAK; where the program exits the current loop
     *   CONTINUE; where the program skips the current iteration of the loop
+    *   FUNCTION func(params...): stmt; where the program defins a function named func
+    *       with parameters params which runs the statement stmt
+    *   func(params...); which calls the function func with given parameters (therefore
+    *       in a new environment)
     *   var := num; where the program sets the variable var to num
     * 
     * @precondition currentToken is WRITELN
@@ -210,13 +235,26 @@ public class Parser
             eat(";");
             return new Continue();
         }
+        // RETURN statement
+        if (currentToken.equals("RETURN"))
+        {
+            eat("RETURN");
+            if (currentToken.equals(";"))
+            {
+                eat(";");
+                return new Return();
+            }
+            Return res = new Return(parseExpr());
+            eat(";");
+            return res;
+        }
         // WRITELN statement
         if (currentToken.equals("WRITELN"))
         {
             eat("WRITELN");
             eat("(");
             //System.out.println(parseStrings());
-            Expression expr = parseExpr();
+            Expression expr = parseStrings();//parseExpr();
             eat(")");
             eat(";");
             return new Writeln(expr);
@@ -232,6 +270,41 @@ public class Parser
             eat(";");
             return new Readln(var);
         }
+        // FUNCTION statement
+        if (currentToken.equals("FUNCTION"))
+        {
+            eat("FUNCTION");
+            
+            if (!Scanner.isLetter(currentToken.charAt((0))))
+            {
+                throw new Error("Invalid function identifier " + currentToken);
+            }
+            String funcName = currentToken;
+            eat(funcName);
+            
+            List<String> params = new ArrayList<String>();
+            eat("(");
+            
+            while (!currentToken.equals(")"))
+            {
+                params.add(currentToken);
+                eat(currentToken);
+                
+                while (currentToken.equals(","))
+                {
+                    eat(",");
+                    params.add(currentToken);
+                    eat(currentToken);
+                }
+            }
+            
+            eat(")");
+            
+            
+            eat(":");
+            Statement s = parseStatement();
+            return new FunctionAssignment(funcName, params, s);
+        }
         // ensure identifier
         if (!Scanner.isLetter(currentToken.charAt((0))))
         {
@@ -239,13 +312,30 @@ public class Parser
             System.exit(1);
             return null;
         }
-        // set variable
+        // set variable or call function
         String var = currentToken;
         eat(currentToken);
-        eat(":=");
-        Expression expr = parseExpr();
-        eat(";");
-        return new Assignment(var, expr);
+        
+        // set variable
+        if (currentToken.equals(":="))
+        {
+            eat(":=");
+            Expression expr = parseExpr();
+            eat(";");
+            return new Assignment(var, expr);
+        }
+        
+        // call function
+        if (currentToken.equals("("))
+        {
+            List<Expression> params = eatParams();
+            FunctionCallStatement res = new FunctionCallStatement(var, params);
+            eat(";");
+            return res;
+        }
+        
+        throw new IllegalArgumentException("Expected \":=\" or \"(\", read " + 
+                            currentToken);
     }
    
    /**
@@ -333,6 +423,7 @@ public class Parser
     *   - factor        => returns -1 times the next factor
     *   ( expr )        => returns the expr within the ( )
     *   id              => returns the value of the variable
+    *   func()          => returns the result of the function
     *   num             => returns the value of the number
     * where num is a number and id is an identifier.
     * 
@@ -360,12 +451,20 @@ public class Parser
            eat(",");
            return null;
        }*/
-       // identifier
+       // identifier (variable or function)
         else if (Scanner.isLetter(currentToken.charAt(0)))
         {
-            Variable res = new Variable(currentToken);
-            eat(currentToken);
-            return res;
+            String id = currentToken;
+            eat(id);
+            
+            // function
+            if (currentToken.equals("("))
+            {
+                return new FunctionCall(id, eatParams());
+            }
+            
+            // variable
+            return new Variable(id);
         }
        // number or string
         else

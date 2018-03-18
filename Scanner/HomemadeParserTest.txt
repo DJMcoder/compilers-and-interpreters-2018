@@ -1,4 +1,4 @@
-BEGIN
+(*BEGIN
 x := 2;
 y := x + 1;
 x := x + y;
@@ -15,4 +15,17 @@ WRITELN(x);
 x := x + 1;
 END;
 END;
-.
+*)
+
+BEGIN
+	//FUNCTION print(x): WRITELN(x);
+	FUNCTION fib(x): 
+	BEGIN
+		IF x <= 0 THEN RETURN 0;
+		IF x = 1  THEN RETURN 1;
+		RETURN fib(x-1) + fib(x-2);
+	END;
+	FOR i := 0 TO 10 DO WRITELN(fib(i));
+	// func(3,5);
+	// WRITELN(func(3, 5));
+END;

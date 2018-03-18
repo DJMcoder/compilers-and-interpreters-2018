@@ -35,6 +35,22 @@ public class Environment
         read = in;
     }
     
+    public Environment(Environment e)
+    {
+        read = e.getScanner();
+        vars = new HashMap<String, Object>();
+        
+        for (String curVar: e.getVariables())
+        {
+            this.setVariable(curVar, e.getVariable(curVar));
+        }
+    }
+    
+    public String[] getVariables()
+    {
+        return vars.keySet().toArray(new String[0]);
+    }
+    
     /**
      * Associates the given variable name with the given value
      * 
