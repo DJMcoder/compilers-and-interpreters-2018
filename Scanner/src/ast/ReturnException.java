@@ -16,7 +16,7 @@ public class ReturnException extends ASTException
      */
     public ReturnException()
     {
-        this.returnValue = null;
+        this(null);
     }
     
     /**
@@ -27,6 +27,7 @@ public class ReturnException extends ASTException
      */
     public ReturnException(Object returnValue)
     {
+        super("Unexpected RETURN outside of function");
         this.returnValue = returnValue;
     }
     
