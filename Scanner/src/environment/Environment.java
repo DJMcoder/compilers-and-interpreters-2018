@@ -39,7 +39,7 @@ public class Environment
     /**
      * Creates a sub Environment
      * 
-     * @param e
+     * @param parent
      *  The previously made environment to copy from
      */
     public Environment(Environment parent)
