@@ -13,14 +13,14 @@ public class Environment
 {
     private Map<String, Object> vars;
     private java.util.Scanner read;
+    private Environment parentEnvironment;
     
     /**
-     * Creates an environment with a System.in input stream
+     * Creates an environment with a default scanner
      */
     public Environment()
     {
-        vars = new HashMap<String, Object>();
-        read = new java.util.Scanner(System.in);
+        this(new java.util.Scanner(System.in));
     }
     
     /**
@@ -33,31 +33,27 @@ public class Environment
     {
         vars = new HashMap<String, Object>();
         read = in;
+        parentEnvironment = null;
     }
     
     /**
-     * Copies another Environment
+     * Creates a sub Environment
      * 
      * @param e
      *  The previously made environment to copy from
      */
-    public Environment(Environment e)
+    public Environment(Environment parent)
     {
-        read = e.getScanner();
-        vars = new HashMap<String, Object>();
-        
-        for (String curVar: e.getVariables())
-        {
-            this.setVariable(curVar, e.getVariable(curVar));
-        }
+        this(parent.getScanner());
+        parentEnvironment = parent;
     }
     
     /**
-     * Gets a list of variable identifiers stored in this environment
+     * Gets a list of variable identifiers stored in this environment (and not the parent)
      * 
      * @return the list of variable identifiers as an array of Strings
      */
-    public String[] getVariables()
+    public String[] getLocalVariables()
     {
         return vars.keySet().toArray(new String[0]);
     }
@@ -72,7 +68,11 @@ public class Environment
      */
     public void setVariable(String variable, Object value)
     {
-        vars.put(variable, value);
+        if (parentEnvironment == null || parentEnvironment.getVariable(variable) == null)
+        {
+            vars.put(variable, value);
+        }
+        parentEnvironment.setVariable(variable, value);
     }
     
     /**
@@ -84,7 +84,12 @@ public class Environment
      */
     public Object getVariable(String variable)
     {
-        return vars.get(variable);
+        Object res = vars.get(variable);
+        if (res == null)
+        {
+            return parentEnvironment.getVariable(variable);
+        }
+        return res;
     }
     
     /**
