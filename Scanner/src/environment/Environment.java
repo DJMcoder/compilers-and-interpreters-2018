@@ -71,6 +71,7 @@ public class Environment
         if (parentEnvironment == null || parentEnvironment.getVariable(variable) == null)
         {
             vars.put(variable, value);
+            return;
         }
         parentEnvironment.setVariable(variable, value);
     }
@@ -87,6 +88,10 @@ public class Environment
         Object res = vars.get(variable);
         if (res == null)
         {
+            if (parentEnvironment == null)
+            {
+                return null;
+            }
             return parentEnvironment.getVariable(variable);
         }
         return res;
