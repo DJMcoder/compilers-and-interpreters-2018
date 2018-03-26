@@ -61,6 +61,9 @@ public class Parser
     * if it does, moves the scanner to the next token,
     * otherwise, throws an IllegalArgumentException
     * 
+    * @precondition currentToken is equal to expected
+    * @postcondition currentToken is moved to the next token
+    * 
     * @param expected
     *       the toke  to expect
     * @throws IllegalArgumentException
@@ -109,6 +112,10 @@ public class Parser
      * Eats function parameters (including parenthesis) filled in by expressions and 
      * returns them as a List of Expressions
      * 
+     * @precondition currentToken is "("
+     * @postcondition all of the tokens between the parentheses have been eaten, 
+     *  and the parentheses have been eaten
+     * 
      * @return the List of Expressions within the parenthesis
      */
     private List<Expression> eatParams()
@@ -153,7 +160,10 @@ public class Parser
     *       in a new environment)
     *   var := num; where the program sets the variable var to num
     * 
-    * @precondition currentToken is WRITELN
+    * @precondition currentToken is WRITELN, BEGIN, READLN, IF, WHILE, FOR, BREAK, RETURN, CONTINUE, FUNCTION, or begins with
+    *   an identifier
+    * @postcondition the entire statement has been eaten
+    * 
     * @return the Statement of the correct type
     */
     public Statement parseStatement()
@@ -278,9 +288,9 @@ public class Parser
             return new Readln(var);
         }
         // FUNCTION statement
-        if (currentToken.equals("FUNCTION"))
+        if (currentToken.equals("PROCEDURE"))
         {
-            eat("FUNCTION");
+            eat("PROCEDURE");
             
             if (!Scanner.isLetter(currentToken.charAt((0))))
             {
@@ -308,7 +318,7 @@ public class Parser
             eat(")");
             
             
-            eat(":");
+            eat(";");
             Statement s = parseStatement();
             return new FunctionAssignment(funcName, params, s);
         }
@@ -348,6 +358,8 @@ public class Parser
    /**
     * Parses one or more strings, connected by a comma
     * 
+    * @postcondition all expressions eaten until end
+    * 
     * @return a single string, concatenating the multiple strings
     */
     public Text parseStrings()
@@ -365,6 +377,9 @@ public class Parser
    /**
     * Parses a single string by removing the surrounding quotes, or an expression
     * as a string.
+    * 
+    * @precondition currentToken begins and ends with a single quote, or is the beginning of an expression
+    * @postcondition the string or expression has been eaten and the currentToken is the next token after
     * 
     * @return the parsed text
     */
@@ -385,6 +400,8 @@ public class Parser
      * expr; where the expression is evaluated as a boolean
      * expr op expr; where the expression is compared to another expression with a
      *      comparison operator
+     *      
+     * @precondition currentToken is the beginning of an expression
      * 
      * @return the Condition which represents the boolean
      */
