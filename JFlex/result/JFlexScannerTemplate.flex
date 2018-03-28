@@ -1,7 +1,11 @@
 package scanner;
 /**
 * This file defines a simple lexer for the compilers course 2017-2018
-* Comment this file
+* 
+* Automatically generates a Scanner which scans through a program using JFlex.
+*
+* @author David Melisso
+* @version 3/28/18
 */
 import java.io.*;
 
