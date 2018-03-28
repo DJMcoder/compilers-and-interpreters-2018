@@ -77,7 +77,7 @@ public class FunctionCall extends Expression
             {
                 return e.getReturnValue();
             }
-            throw new ASTException("Function " + functionName + " did not return a result");
+            return 0;
         }
         catch (ClassCastException e)
         {
