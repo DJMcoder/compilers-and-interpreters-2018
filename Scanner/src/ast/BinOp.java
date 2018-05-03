@@ -154,4 +154,43 @@ public class BinOp extends Expression
         throw new ASTException("Invalid operator " + op);
         
     }
+    
+    /**
+     * Evaluates the binary operation and loads the result onto $v0
+     * 
+     * @param e 
+     *  The interface for which to add code to the compiled file
+     */
+    public void compile(Emitter e)
+    {
+        
+        
+        exp1.compile(e);
+        e.emitPush("$v0");
+        exp2.compile(e);
+        e.emitPop("$t0");
+        
+        if (op.equals("*"))
+        {
+            e.emit("mult $v0 $t0");
+            e.emit("mflo $v0");
+        }
+        else if (op.equals("/"))
+        {
+            e.emit("div $t0 $v0");
+            e.emit("mflo $v0");
+        }
+        else if (op.equals("+"))
+        {
+            e.emit("addu $v0 $v0 $t0");
+        }
+        else if (op.equals("-"))
+        {
+            e.emit("subu $v0 $t0 $v0");
+        }
+        else
+        {
+            throw new RuntimeException("Invalid operator " + op);
+        }
+    }
 }

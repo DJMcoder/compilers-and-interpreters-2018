@@ -186,5 +186,51 @@ public class Condition extends BinOp
         
         throw new ASTException("Invalid comparison operator " + op);
     }
+    
+    /**
+     * Jumps to the given label if the condition is not true, 
+     * otherwise continues.
+     * 
+     * @param e 
+     *  The interface for which to add code to the compiled file
+     * @param label
+     *  the label to jump to
+     */
+    public void compile(Emitter e, String label)
+    {
+        exp1.compile(e);
+        e.emitPush("$v0");
+        exp2.compile(e);
+        e.emitPop("$t0");
+        
+        if (op.equals("="))
+        {
+            e.emit("bne $t0 $v0 "+label);
+        }
+        else if (op.equals(">"))
+        {
+            e.emit("ble $t0 $v0 "+label);
+        }
+        else if (op.equals("<"))
+        {
+            e.emit("bge $t0 $v0 "+label);
+        }
+        else if (op.equals("<>"))
+        {
+            e.emit("beq $t0 $v0 "+label);
+        }
+        else if (op.equals("<="))
+        {
+            e.emit("bgt $t0 $v0 "+label);
+        }
+        else if (op.equals(">="))
+        {
+            e.emit("blt $t0 $v0 "+label);
+        }
+        else
+        {
+            throw new RuntimeException("Invalid comparison operator " + op);
+        }
+    }
 
 }

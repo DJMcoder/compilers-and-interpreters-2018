@@ -43,4 +43,15 @@ public class Number extends Expression
     {
         return value;
     }
+    
+    /**
+     * Loads this number into the immediate register $v0
+     * 
+     * @param e
+     *  The interface for which to add code to the compiled file
+     */
+    public void compile(Emitter e) 
+    {
+        e.emit("li $v0 " + Integer.toString(value));
+    }
 }

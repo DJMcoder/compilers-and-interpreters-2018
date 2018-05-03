@@ -56,6 +56,66 @@ public class Text extends Expression
     }
     
     /**
+     * Determines whether the text is a Number
+     * 
+     * @return true if the text can be converted to a Number;
+     *         false otherwise
+     */
+    public boolean isNum()
+    {
+        if (type == 0) 
+        {
+            try
+            {
+                Integer.parseInt(str);
+                return true;
+            }
+            catch(NumberFormatException e)
+            {
+                return false;
+            }
+        }
+        else if (type == 1)
+        {
+            return strs.size() == 1 && strs.get(0).isNum();
+        }
+        else 
+        {
+            return expr instanceof Number;
+        }
+    }
+    
+    /** 
+     * Determines whether the text represents a BinOp
+     * 
+     * @return true if the Text can be converted to a BinOp;
+     *         false otherwise
+     */
+    public boolean isBinOp()
+    {
+        if (type == 1)
+        {
+            return strs.size() == 1 && strs.get(0).isBinOp();
+        }
+        return type == 2 && expr instanceof BinOp;
+    }
+    
+    /** 
+     * Determines whether the text represents a Variable
+     * 
+     * @return true if the Text can be converted into a Variable;
+     *         false otherwise
+     */
+    public boolean isVar()
+    {
+        if (type == 1)
+        {
+            return strs.size() == 1 && strs.get(0).isVar();
+        }
+        return type == 2 && expr instanceof Variable;
+    }
+    
+    /**
      * Attempts to parse the text as an integer
      * @return a Number object with the integer
      * @throws NumberFormatException
@@ -63,7 +123,46 @@ public class Text extends Expression
      */
     public Number toNum() throws NumberFormatException
     {
-        return new ast.Number(Integer.parseInt(str));
+        if (type == 0)
+        {
+            return new ast.Number(Integer.parseInt(str));
+        }
+        else if (type == 1)
+        {
+            return strs.get(0).toNum();
+        }
+        else
+        {
+            return (Number)expr;
+        }
+    }
+    
+    /**
+     * Converts the Text into a Binary operation
+     * @return
+     *  the binary operation
+     */
+    public BinOp toBinOp()
+    {
+        if (type == 1)
+        {
+            return strs.get(0).toBinOp();
+        }
+        return (BinOp)expr;
+    }
+    
+    /**
+     * Converts the Text into a Variable
+     * @return
+     *  the variable given by the text
+     */
+    public Variable toVariable()
+    {
+        if (type == 1)
+        {
+            return strs.get(0).toVariable();
+        }
+        return (Variable)expr;
     }
     
     /**

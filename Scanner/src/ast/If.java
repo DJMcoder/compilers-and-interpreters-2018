@@ -78,5 +78,37 @@ public class If extends Statement
             els.exec(env);
         }
     }
+    
+    /**
+     * Runs the then statement if the condition is true,
+     * Runs the else statement if the condition is untrue and an else statement exists
+     * 
+     * @param e
+     *  The interface for which to add code to the compiled file
+     */
+    public void compile(Emitter e)
+    {
+        if (hasElse)
+        {
+            String endif = "endif" + Integer.toString(e.getNextLabel());
+            String startelse = "else" + Integer.toString(e.getNextLabel());
+            
+            condition.compile(e, startelse);
+            then.compile(e);
+            e.emit("j "+endif);
+            
+            e.emit(startelse + ":");
+            els.compile(e);
+            e.emit(endif + ":");
+        }
+        else
+        {
+            String endif = "endif" + Integer.toString(e.getNextLabel());
+            
+            condition.compile(e, endif);
+            then.compile(e);
+            e.emit(endif + ":");
+        }
+    }
 
 }

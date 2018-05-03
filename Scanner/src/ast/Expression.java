@@ -22,4 +22,14 @@ public abstract class Expression
      *  if there was an error evaluating the expression
      */
     public abstract Object eval(Environment env) throws ASTException;
+    
+    /**
+     * Throws a runtime exception because this method was not implemented in the child classes
+     * @param e
+     *  the Emitter which the child classes use to interface with the output file
+     */
+    public void compile(Emitter e)
+    {
+        throw new RuntimeException("Implement me!!!!!");
+    }
 }

@@ -13,7 +13,7 @@ import environment.Environment;
  */
 public class Writeln extends Statement
 {
-    Expression expr;
+    private Expression expr;
     
     /**
      * Creates a Writeln object
@@ -37,5 +37,43 @@ public class Writeln extends Statement
     public void exec(Environment env) throws ASTException
     {
         System.out.println(expr.eval(env));
+    }
+    
+    /**
+     * Prints whatever was on the stack
+     * 
+     * @param e 
+     *  The interface for which to add code to the compiled file
+     */
+    public void compile(Emitter e)
+    {
+        Text text = (Text)expr;
+        Expression ex;
+        if (text.isNum())
+        {
+            ex = text.toNum();
+        }
+        else if (text.isBinOp())
+        {
+            ex = text.toBinOp();
+        }
+        else if (text.isVar())
+        {
+            ex = text.toVariable();
+        }
+        else 
+        {
+            throw new RuntimeException("Expression needs to be a number");
+        }
+            
+        ex.compile(e);
+        e.emit("move $a0 $v0");
+        e.emit("li $v0 1");
+        e.emit("syscall");
+        
+        // newline
+        e.emit("li $v0 4");
+        e.emit("la $a0 newline");
+        e.emit("syscall");
     }
 }

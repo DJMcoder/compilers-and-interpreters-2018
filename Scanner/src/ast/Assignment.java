@@ -30,6 +30,16 @@ public class Assignment extends Statement
         var = v;
         exp = e;
     }
+
+    /**
+     * Gets the identifier of the variable of the assignment
+     * @return
+     *  the identifier for the variable
+     */
+    public String getVariable()
+    {
+        return var;
+    }
     
     /**
      * Sets the variable to the result of the expression
@@ -42,5 +52,18 @@ public class Assignment extends Statement
     public void exec(Environment env) throws ASTException
     {
         env.setVariable(var, exp.eval(env));
+    }
+    
+    /**
+     * Stores the value to the correct place in memory
+     * 
+     * @param e 
+     *  The interface for which to add code to the compiled file
+     */
+    public void compile(Emitter e)
+    {
+        exp.compile(e);
+        e.emit("la $t0 var"+var);
+        e.emit("sw $v0 ($t0)");
     }
 }

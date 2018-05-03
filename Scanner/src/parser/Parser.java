@@ -160,8 +160,18 @@ public class Parser
     *       in a new environment)
     *   var := num; where the program sets the variable var to num
     * 
-    * @precondition currentToken is WRITELN, BEGIN, READLN, IF, WHILE, FOR, BREAK, RETURN, CONTINUE, FUNCTION, or begins with
-    *   an identifier
+    * @precondition currentToken is 
+    *   WRITELN, 
+    *   BEGIN, 
+    *   READLN, 
+    *   IF, 
+    *   WHILE, 
+    *   FOR, 
+    *   BREAK, 
+    *   RETURN, 
+    *   CONTINUE, 
+    *   FUNCTION, 
+    *   or begins with an identifier
     * @postcondition the entire statement has been eaten
     * 
     * @return the Statement of the correct type
@@ -378,8 +388,10 @@ public class Parser
     * Parses a single string by removing the surrounding quotes, or an expression
     * as a string.
     * 
-    * @precondition currentToken begins and ends with a single quote, or is the beginning of an expression
-    * @postcondition the string or expression has been eaten and the currentToken is the next token after
+    * @precondition currentToken begins and ends with a single quote, 
+    *   or is the beginning of an expression
+    * @postcondition the string or expression has been eaten and the 
+    *   currentToken is the next token after
     * 
     * @return the parsed text
     */
@@ -609,10 +621,14 @@ public class Parser
      */
     public void parseAndExecute() throws ASTException
     {
+        List<ast.Statement> statements = new ArrayList<ast.Statement>();
         while (hasNext())
         {
-            parseStatement().exec(global);
+            
+            statements.add(parseStatement());
         }
+        ast.Program program = new ast.Program(statements);
+        program.exec(global);
     }
    
    

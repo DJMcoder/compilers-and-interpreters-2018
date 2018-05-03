@@ -1,8 +1,3 @@
-PROCEDURE Add();
-BEGIN
-WRITELN(x);
-x := x + 2;
-END;
 BEGIN
 x := 2;
 y := x + 1;
@@ -13,12 +8,21 @@ BEGIN
 WRITELN(x);
 WRITELN(y);
 END;
-x := 0;
-WHILE x < 10 DO
 BEGIN
-WRITELN(x);
-x := x + 1;
+IF 14 = 14 THEN
+BEGIN
+IF 14 <> 14 THEN WRITELN(3);
+IF 14 <= 14 THEN WRITELN(4);
 END;
-ignore := Add();
-WRITELN(x);
+IF 15 > 14 THEN WRITELN(5);
 END;
+BEGIN
+count := 1;
+WHILE count <= 15 DO
+BEGIN
+WRITELN(count);
+count := count + 1;
+END;
+END;
+END;
+.

@@ -62,5 +62,23 @@ public class While extends Statement
             }
         }
     }
+    
+    /**
+     * Executes the statement while the condition is true
+     * 
+     * @param e
+     *  The interface for which to add code to the compiled file
+     */
+    public void compile(Emitter e)
+    {
+        String whi = "while" + Integer.toString(e.getNextLabel());
+        String whiend = "whileend" + Integer.toString(e.getNextLabel());
+        
+        e.emit(whi +":");
+        condition.compile(e, whiend);
+        statement.compile(e);
+        e.emit("j " + whi);
+        e.emit(whiend + ":");
+    }
 
 }

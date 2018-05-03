@@ -42,4 +42,16 @@ public class Variable extends Expression
         }
         return res;
     }
+    
+    /**
+     * Loads the value stored in the variable to $v0
+     * 
+     * @param e
+     *  The interface for which to add code to the compiled file
+     */
+    public void compile(Emitter e)
+    {
+        e.emit("la $t0 var"+name);
+        e.emit("lw $v0 ($t0)");
+    }
 }
