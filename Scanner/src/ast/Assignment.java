@@ -1,5 +1,7 @@
 package ast;
 import environment.Environment;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * An assignment statement assigns the result of an expression to a variable.
@@ -55,6 +57,18 @@ public class Assignment extends Statement
     }
     
     /**
+     * Returns the set of variables declared in this statement
+     * @return
+     *  a set with a single String referring to the variable declared in this assignment
+     */
+    public Set<String> getUsedVariables()
+    {
+        Set<String> res = new HashSet<String>();
+        res.add(getVariable());
+        return res;
+    }
+    
+    /**
      * Stores the value to the correct place in memory
      * 
      * @param e 
@@ -63,7 +77,29 @@ public class Assignment extends Statement
     public void compile(Emitter e)
     {
         exp.compile(e);
-        e.emit("la $t0 var"+var);
-        e.emit("sw $v0 ($t0)");
+        
+        if (e.isGlobalVariable(var))
+        {
+            e.emit("la $t0 var"+var);
+            e.emit("sw $v0 ($t0)");
+            return;
+        }
+        
+        
+        if (e.getProcedureContext() == null)
+        {
+            throw new RuntimeException("Cannot set local variable in global environment");
+        }
+          
+        if (e.isLocalVariable(var))
+        {
+            e.emit("sw $v0 " + e.getOffset(var) + "($sp)");
+        }
+        else
+        {
+            throw new RuntimeException("Cannot set local variable that does not exist");
+        }
+        
+        
     }
 }

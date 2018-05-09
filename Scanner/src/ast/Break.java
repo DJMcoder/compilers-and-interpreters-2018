@@ -1,5 +1,8 @@
 package ast;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import environment.Environment;
 
 /**
@@ -24,5 +27,17 @@ public class Break extends Statement
     {
         throw new BreakException();
     }
+
+    /**
+     * Gets a list of variables that are used within this block
+     * @return
+     *  an empty set
+     */
+    public Set<String> getUsedVariables()
+    {
+        return new HashSet<String>();
+    }
+    
+    
 
 }

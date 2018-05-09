@@ -115,6 +115,22 @@ public class Text extends Expression
         return type == 2 && expr instanceof Variable;
     }
     
+    /** 
+     * Determines whether the text represents a FunctionCall
+     * 
+     * @return true if the Text can be converted into a FunctionCall;
+     *         false otherwise
+     */
+    public boolean isFunctionCall()
+    {
+        if (type == 1)
+        {
+            return strs.size() == 1 && strs.get(0).isFunctionCall();
+        }
+        
+        return type == 2 && expr instanceof FunctionCall;
+    }
+    
     /**
      * Attempts to parse the text as an integer
      * @return a Number object with the integer
@@ -163,6 +179,20 @@ public class Text extends Expression
             return strs.get(0).toVariable();
         }
         return (Variable)expr;
+    }
+    
+    /**
+     * Converts the Text into a FunctionCall
+     * @return
+     *  the variable given by the text
+     */
+    public FunctionCall toFunctionCall()
+    {
+        if (type == 1)
+        {
+            return strs.get(0).toFunctionCall();
+        }
+        return (FunctionCall)expr;
     }
     
     /**

@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Set;
+
 import environment.Environment;
 
 /**
@@ -79,6 +81,16 @@ public class While extends Statement
         statement.compile(e);
         e.emit("j " + whi);
         e.emit(whiend + ":");
+    }
+
+    /**
+     * Gets a list of variables that are used within this statement
+     * @return
+     *  the variables used within the sub-statement
+     */
+    public Set<String> getUsedVariables()
+    {
+        return statement.getUsedVariables();
     }
 
 }

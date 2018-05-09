@@ -47,7 +47,7 @@ public class Program extends Block
         
         for (String var: vars)
         {
-            e.emit("var"+var+": .word 0");
+            e.addGlobalVariable(var);
         }
         
         e.emit(".text");
@@ -72,6 +72,7 @@ public class Program extends Block
     public static void main(String[] args) 
     {
         String filename =  "./HomemadeParserTest.txt";
+        System.out.println("Beginning compilation of file " + filename);
         try
         {
             Parser p = (new Parser(
@@ -90,6 +91,7 @@ public class Program extends Block
             
             program.compile(e);
             e.close();
+            System.out.println("Compilation complete.");
         }
         catch (FileNotFoundException e)
         {

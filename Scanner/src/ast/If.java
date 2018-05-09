@@ -1,5 +1,8 @@
 package ast;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import environment.Environment;
 
 /**
@@ -109,6 +112,22 @@ public class If extends Statement
             then.compile(e);
             e.emit(endif + ":");
         }
+    }
+
+    /**
+     * Gets a list of variables that are used within this block
+     * @return
+     *  a list of strings correlating to the variables used
+     */
+    public Set<String> getUsedVariables()
+    {
+        Set<String> set = new HashSet<String>();
+        set.addAll(els.getUsedVariables());
+        if (hasElse)
+        {
+            set.addAll(then.getUsedVariables());
+        }
+        return set;
     }
 
 }

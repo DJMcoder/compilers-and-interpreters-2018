@@ -1,28 +1,20 @@
+PROCEDURE printSquares(low, high);
 BEGIN
-x := 2;
-y := x + 1;
-x := x + y;
-WRITELN(x * y);
-IF x > y THEN
+	count := low;
+	WHILE count <= high DO
+	BEGIN
+		square := count * count;
+		WRITELN(square);
+		count := count + 1;
+		times := times + 1;
+	END;
+	RETURN times;
+END;
+
 BEGIN
-WRITELN(x);
-WRITELN(y);
+	count := 196;
+	times := 0;
+	ignore := printSquares(10, 13);
+	WRITELN(count);
+	WRITELN(ignore + 5);
 END;
-BEGIN
-IF 14 = 14 THEN
-BEGIN
-IF 14 <> 14 THEN WRITELN(3);
-IF 14 <= 14 THEN WRITELN(4);
-END;
-IF 15 > 14 THEN WRITELN(5);
-END;
-BEGIN
-count := 1;
-WHILE count <= 15 DO
-BEGIN
-WRITELN(count);
-count := count + 1;
-END;
-END;
-END;
-.

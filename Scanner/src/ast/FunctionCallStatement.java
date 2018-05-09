@@ -1,6 +1,9 @@
 package ast;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import environment.Environment;
 
 /**
@@ -82,6 +85,43 @@ public class FunctionCallStatement extends Statement
             throw new ASTException("Cannot call variable " + functionName + " because "
                     + "it is not a function");
         }
+    }
+    
+    /**
+     * Saves the return address to the stack,
+     * Adds parameters to the stack
+     * Jumps to a procedure
+     * 
+     * @param e 
+     *  The interface for which to add code to the compiled file
+     */
+    public void compile(Emitter e)
+    {
+        e.emitPush("$ra");
+        for (Expression arg: params)
+        {
+            arg.compile(e);
+            e.emitPush("$v0");
+        }
+        
+        e.emit("jal proc" + functionName);
+        
+        
+        for (int i = 0; i < params.size(); i++)
+        {
+            e.emitPop();
+        }
+        e.emitPop("$ra");
+    }
+
+    /**
+     * Gets a list of variables that are used within this block
+     * @return
+     *  an empty set
+     */
+    public Set<String> getUsedVariables()
+    {
+        return new HashSet<String>();
     }
 
 }

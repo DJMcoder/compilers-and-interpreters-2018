@@ -1,5 +1,8 @@
 package ast;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import environment.Environment;
 
 /**
@@ -23,6 +26,16 @@ public class Continue extends Statement
     public void exec(Environment env) throws ContinueException
     {
         throw new ContinueException();
+    }
+
+    /**
+     * Gets a list of variables that are used within this block
+     * @return
+     *  an empty set
+     */
+    public Set<String> getUsedVariables()
+    {
+        return new HashSet<String>();
     }
 
 }

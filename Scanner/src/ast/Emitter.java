@@ -1,5 +1,9 @@
 package ast;
 import java.io.*;
+import java.util.Stack;
+import java.util.List;
+import java.util.Set;
+import java.util.ArrayList;
 
 /**
  * Emitter is a helper to write to the compiled file
@@ -13,6 +17,10 @@ public class Emitter
 {
     private PrintWriter out;
     private int labelcur;
+    private Stack<FunctionAssignment> procStack;
+    private Stack<Integer> excessStackHeight;
+    private List<String> globalVariables;
+    private Stack<List<String>> varStack;
 
 	/**
 	 * creates an emitter for writing to a new file with given name
@@ -22,6 +30,10 @@ public class Emitter
     public Emitter(String outputFileName)
     {
         labelcur = 1;
+        procStack = new Stack<FunctionAssignment>();
+        excessStackHeight = new Stack<Integer>();
+        varStack = new Stack<List<String>>();
+        globalVariables = new ArrayList<String>();
         try
         {
             out = new PrintWriter(new FileWriter(outputFileName), true);
@@ -59,8 +71,24 @@ public class Emitter
 	 */
     public void emitPush(String reg)
     {
+        if (excessStackHeight.size() != 0)
+        {
+            excessStackHeight.push(excessStackHeight.pop() + 1);
+        }
         this.emit("subu $sp $sp 4");
         this.emit("sw " + reg + " ($sp)");
+    }
+    
+    /**
+     * writes code pop the stack, moving the stack pointer downwards
+     */
+    public void emitPop()
+    {
+        if (excessStackHeight.size() != 0)
+        {
+            excessStackHeight.push(excessStackHeight.pop() - 1);
+        }
+        this.emit("addu $sp $sp 4");
     }
 	
 	/**
@@ -70,6 +98,10 @@ public class Emitter
 	 */
     public void emitPop(String reg)
     {
+        if (excessStackHeight.size() != 0)
+        {
+            excessStackHeight.push(excessStackHeight.pop() - 1);
+        }
         this.emit("lw " + reg + " ($sp)");
         this.emit("addu $sp $sp 4");
     }
@@ -81,5 +113,122 @@ public class Emitter
     public int getNextLabel()
     {
         return labelcur++;
+    }
+    
+    /**
+     * Adds a local variable to the list of local variables,
+     * and emits code to make space in the stack for it
+     * @param varName
+     *  the name of the variable to add
+     */
+    private void addLocalVariable(String varName)
+    {
+        emit("subu $sp $sp 4");
+        varStack.peek().add(varName);
+    }
+    
+    /**
+     * remember proc as current procedure context
+     * @param proc
+     *  the procedure to set as the current procedure
+     */
+    public void setProcedureContext(FunctionAssignment proc)
+    {
+        excessStackHeight.push(0);
+        procStack.push(proc);
+        varStack.push(new ArrayList<String>(proc.getFunction().getParams()));
+        
+        Set<String> vars = proc.getFunction().getStatement().getUsedVariables();
+        for (String var: vars)
+        {
+            if (!isGlobalVariable(var))
+            {
+                addLocalVariable(var);
+            }
+        }
+    }
+    
+    /**
+     * clear current procedure context
+     */
+    public void clearProcedureContext()
+    {
+        excessStackHeight.pop();
+        procStack.pop();
+        varStack.pop();
+    }
+    
+    /**
+     * Gets the current procedure context
+     * @return the procedure at the top of the procedure stack
+     */
+    public FunctionAssignment getProcedureContext()
+    {
+        if (procStack.size() == 0)
+        {
+            return null;
+        }
+        return procStack.peek();
+    }
+    
+    /**
+     * Determines whether a variable is defined in the current procedure
+     * @param varName
+     *  the name of the variable to check
+     * @return true if the list of local variables includes the given variable;
+     *         false otherwise
+     */
+    public boolean isLocalVariable(String varName)
+    {
+        return varStack.peek().contains(varName);
+    }
+    
+    /**
+     * Adds a global variable to the list of global variables,
+     * and emits code to define the variable globally.
+     * @param varName
+     *  the name of the variable to add
+     */
+    public void addGlobalVariable(String varName)
+    {
+        this.emit("var"+varName+": .word 0");
+        this.globalVariables.add(varName);
+    }
+    
+    /**
+     * Determines whether a variable is defined globally.
+     * @param varName
+     *  the name of the variable to check
+     * @return true if the list of global variables includes the given variable;
+     *         false otherwise
+     */
+    public boolean isGlobalVariable(String varName)
+    {
+        return globalVariables.contains(varName);
+    }
+    
+    /**
+     * Gets the offset from the stack pointer of the memory address of a local variable
+     * 
+     * @precondition: localVarName is the name of a local
+     *                variable for the procedure currently
+     *                being compiled
+     * @param localVarName
+     *  the name of the variable to look up
+     * @return the offset for the given variable
+     */
+    public int getOffset(String localVarName)
+    {
+        List<String> localvars = varStack.peek();
+        int excessStack;
+        if (excessStackHeight.size() == 0)
+        {
+            excessStack = 0;
+        }
+        else
+        {
+            excessStack = excessStackHeight.peek();
+        }
+        return 4*(localvars.size() - 1 - localvars.indexOf(localVarName) + excessStack);
     }
 }

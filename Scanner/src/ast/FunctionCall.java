@@ -86,4 +86,30 @@ public class FunctionCall extends Expression
         }
     }
 
+    /**
+     * Saves the return address to the stack,
+     * Adds parameters to the stack
+     * Jumps to a procedure
+     * 
+     * @param e 
+     *  The interface for which to add code to the compiled file
+     */
+    public void compile(Emitter e)
+    {
+        e.emitPush("$ra");
+        for (Expression arg: params)
+        {
+            arg.compile(e);
+            e.emitPush("$v0");
+        }
+        
+        e.emit("jal proc" + functionName);
+        
+        
+        for (int i = 0; i < params.size(); i++)
+        {
+            e.emitPop();
+        }
+        e.emitPop("$ra");
+    }
 }

@@ -46,14 +46,7 @@ public class Block extends Statement
         Set<String> res = new HashSet<String>();
         for (Statement stmt: stmts)
         {
-            if (stmt instanceof Assignment)
-            {
-                res.add(((Assignment) stmt).getVariable());
-            }
-            else if (stmt instanceof Block)
-            {
-                res.addAll(((Block) stmt).getUsedVariables());
-            }
+            res.addAll(stmt.getUsedVariables());
         }
         return res;
     }

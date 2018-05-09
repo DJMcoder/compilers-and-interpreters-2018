@@ -1,5 +1,7 @@
 package ast;
 
+import java.util.Set;
+
 import environment.Environment;
 
 /**
@@ -29,4 +31,10 @@ public abstract class Statement
     {
         throw new RuntimeException("Implement me!!!!!");
     }
+    
+    /**
+     * Gets a list of variables that are declared within this statement
+     * @return the set containing all the variables declared within this statement
+     */
+    public abstract Set<String> getUsedVariables(); 
 }

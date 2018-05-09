@@ -1,4 +1,7 @@
 package ast;
+import java.util.HashSet;
+import java.util.Set;
+
 import environment.Environment;
 
 /**
@@ -61,6 +64,10 @@ public class Writeln extends Statement
         {
             ex = text.toVariable();
         }
+        else if (text.isFunctionCall())
+        {
+            ex = text.toFunctionCall();
+        }
         else 
         {
             throw new RuntimeException("Expression needs to be a number");
@@ -75,5 +82,15 @@ public class Writeln extends Statement
         e.emit("li $v0 4");
         e.emit("la $a0 newline");
         e.emit("syscall");
+    }
+    
+    /**
+     * Gets a list of variables that are used within this block
+     * @return
+     *  an empty set
+     */
+    public Set<String> getUsedVariables()
+    {
+        return new HashSet<String>();
     }
 }

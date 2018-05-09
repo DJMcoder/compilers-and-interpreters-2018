@@ -1,5 +1,8 @@
 package ast;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import environment.Environment;
 
 /**
@@ -49,6 +52,35 @@ public class Return extends Statement
             throw new ReturnException();
         }
         throw new ReturnException(returnValue.eval(env)); 
+    }
+    
+    /**
+     * Puts the return address in $v0, jumps to the return address 
+     * 
+     * @param e 
+     *  The interface for which to add code to the compiled file
+     */
+    public void compile(Emitter e)
+    {
+        if (returnValue == null)
+        {
+            e.emit("li $v0 0");
+        }
+        else
+        {
+            returnValue.compile(e);
+        }
+        e.emit("jr $ra");
+    }
+    
+    /**
+     * Gets a list of variables that are used within this block
+     * @return
+     *  an empty set
+     */
+    public Set<String> getUsedVariables()
+    {
+        return new HashSet<String>();
     }
 
 }
