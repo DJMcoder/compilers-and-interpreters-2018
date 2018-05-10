@@ -71,7 +71,7 @@ public class Program extends Block
      */
     public static void main(String[] args) 
     {
-        String filename =  "./HomemadeParserTest.txt";
+        String filename =  "./input.txt";
         System.out.println("Beginning compilation of file " + filename);
         try
         {
