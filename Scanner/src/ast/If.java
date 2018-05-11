@@ -122,10 +122,10 @@ public class If extends Statement
     public Set<String> getUsedVariables()
     {
         Set<String> set = new HashSet<String>();
-        set.addAll(els.getUsedVariables());
+        set.addAll(then.getUsedVariables());
         if (hasElse)
         {
-            set.addAll(then.getUsedVariables());
+            set.addAll(els.getUsedVariables());
         }
         return set;
     }
