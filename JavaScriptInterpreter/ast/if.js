@@ -17,7 +17,6 @@ var statement_1 = __importDefault(require("./statement"));
 var If = /** @class */ (function (_super) {
     __extends(If, _super);
     function If(condition, program, els) {
-        if (els === void 0) { els = undefined; }
         var _this = _super.call(this) || this;
         _this.condition = condition;
         _this.program = program;

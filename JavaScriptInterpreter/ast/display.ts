@@ -6,7 +6,7 @@ import Environment from '../environment/environment';
 export default class Display extends Statement {
   exp: Expression;
   readToVar: string | void;
-  constructor(exp: Expression, readToVar: string | void = undefined) {
+  constructor(exp: Expression, readToVar?: string) {
     super();
     this.exp = exp;
     this.readToVar = readToVar;

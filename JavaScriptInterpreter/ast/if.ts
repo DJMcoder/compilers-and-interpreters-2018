@@ -8,7 +8,7 @@ export default class If extends Statement {
   program: Program;
   else: Program | void;
 
-  constructor(condition: Expression, program: Program, els: Program | void = undefined) {
+  constructor(condition: Expression, program: Program, els?: Program) {
     super();
     this.condition = condition;
     this.program = program;

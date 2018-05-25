@@ -18,7 +18,6 @@ var readline_sync_1 = __importDefault(require("readline-sync"));
 var Display = /** @class */ (function (_super) {
     __extends(Display, _super);
     function Display(exp, readToVar) {
-        if (readToVar === void 0) { readToVar = undefined; }
         var _this = _super.call(this) || this;
         _this.exp = exp;
         _this.readToVar = readToVar;
