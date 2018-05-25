@@ -9,7 +9,16 @@
   "author": "David Melisso",
   "license": "ISC",
   "dependencies": {
+    "@types/readline-sync": "^1.4.3",
     "colors": "^1.2.5",
     "readline-sync": "^1.4.9"
+  },
+  "devDependencies": {
+    "@types/node": "^10.1.2",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.12.0",
+    "eslint-plugin-node": "^6.0.1",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.1.0"
   }
 }

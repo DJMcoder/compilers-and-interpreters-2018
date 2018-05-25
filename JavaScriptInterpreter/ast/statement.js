@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Expression stores values which it evaluates and returns the result, being either
  * an Integer, a String, or a Boolean
@@ -6,30 +8,9 @@
  * @author David Melisso
  *
  */
-class Statement
-{
-    constructor() {
-      if (new.target === Statement) {
-        throw new TypeError("Cannot construct Statement instances directly");
-      }
-
-      if (typeof this.exec !== 'function') {
-        throw new TypeError("Must override method exec");
-      }
+var Statement = /** @class */ (function () {
+    function Statement() {
     }
-
-    /**
-     * https://stackoverflow.com/questions/29480569/does-ecmascript-6-have-a-convention-for-abstract-classes
-     * Evaluates the expression and returns the result
-     *
-     * @param env
-     *  the environment which to evaluate the expression in
-     * @return
-     *  the result of the expression
-     * @throws ASTException
-     *  if there was an error evaluating the expression
-     */
-
-}
-
-module.exports = Statement;
+    return Statement;
+}());
+exports.default = Statement;

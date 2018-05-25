@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * Environment stores variables and the input stream.
  *
@@ -7,13 +5,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * @author David Melisso
  *
  */
-var Environment = /** @class */ (function () {
+export default class Environment
+{
+    vars: { [key: string]: number | boolean };
     /**
      * Creates an environment with a default scanner
      */
-    function Environment() {
-        this.vars = {};
+    constructor()
+    {
+      this.vars = {};
     }
+
     /**
      * Associates the given variable name with the given value
      *
@@ -22,9 +24,11 @@ var Environment = /** @class */ (function () {
      * @param value
      *  the value to associate with the variable
      */
-    Environment.prototype.setVariable = function (variable, value) {
+    setVariable(variable: string, value: number | boolean): void
+    {
         this.vars[variable] = value;
-    };
+    }
+
     /**
      * Returns the value associated with the given variable name
      *
@@ -32,9 +36,8 @@ var Environment = /** @class */ (function () {
      * @param variable
      *  the variable to get
      */
-    Environment.prototype.getVariable = function (variable) {
+    getVariable(variable: string): number | boolean
+    {
         return this.vars[variable];
-    };
-    return Environment;
-}());
-exports.default = Environment;
+    }
+}
