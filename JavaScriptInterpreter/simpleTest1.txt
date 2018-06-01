@@ -4,6 +4,7 @@ display x read x
 while x < 10 do 
    display x
    assign x = x+1
+   display x < 5 > 3
 end
 if x = 9 then
     display x
@@ -21,6 +22,3 @@ end
 end
 display x + 4
 end
-
-display -600
-display x*5+4
